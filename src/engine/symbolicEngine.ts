@@ -116,6 +116,21 @@ function normalizeEquationParts(expression: string): {
   }
 }
 
+function buildEquationForSolve(left: string, right: string): string {
+  try {
+    const diff = nerdamer.simplify(`(${left})-(${right})`)
+    const numerator = diff.numerator().toString()
+
+    if (numerator && numerator !== '0') {
+      return `${numerator}=0`
+    }
+  } catch {
+    // Fall back to the original equation shape.
+  }
+
+  return `(${left})-(${right})=0`
+}
+
 function normalizeSolutionValue(value: unknown): string {
   if (typeof value === 'string') {
     return value
@@ -155,12 +170,13 @@ export function solveEquation(
 
   const targetVariable = ensureValidVariable(variable)
   const equationParts = normalizeEquationParts(normalized)
+  const equationForSolve = buildEquationForSolve(
+    equationParts.left,
+    equationParts.right,
+  )
 
   try {
-    const rawSolutions = nerdamer.solveEquations(
-      equationParts.equation,
-      targetVariable,
-    )
+    const rawSolutions = nerdamer.solveEquations(equationForSolve, targetVariable)
 
     const normalizedSolutions = Array.isArray(rawSolutions)
       ? rawSolutions
@@ -178,7 +194,7 @@ export function solveEquation(
 
     return {
       variable: targetVariable,
-      normalizedEquation: equationParts.equation,
+      normalizedEquation: equationForSolve,
       solutions: deduped,
     }
   } catch (error) {
@@ -217,11 +233,18 @@ export function simplifySymbolicExpression(expression: string): string {
   const normalized = normalizeExpression(expression)
   ensureSafeExpression(normalized)
 
-  if (normalized.includes('=')) {
-    throw new ValidationError('Simplification expects an expression without "="')
-  }
-
   try {
+    if (normalized.includes('=')) {
+      const equationParts = normalizeEquationParts(normalized)
+      const equationForSolve = buildEquationForSolve(
+        equationParts.left,
+        equationParts.right,
+      )
+
+      const leftExpression = equationForSolve.split('=')[0]
+      return `${nerdamer.simplify(leftExpression).toString()}=0`
+    }
+
     return nerdamer.simplify(normalized).toString()
   } catch (error) {
     if (error instanceof Error) {

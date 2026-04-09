@@ -1,6 +1,8 @@
 ﻿declare module 'nerdamer' {
   interface NerdamerExpression {
     evaluate(): NerdamerExpression
+    numerator(): NerdamerExpression
+    denominator(): NerdamerExpression
     toString(): string
   }
 
