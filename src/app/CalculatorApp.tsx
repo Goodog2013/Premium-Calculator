@@ -3,6 +3,7 @@ import { AnimatePresence, motion } from 'framer-motion'
 import { History, Settings, Star } from 'lucide-react'
 import { ExpressionDisplay } from '../components/calculator/ExpressionDisplay'
 import { Keypad } from '../components/calculator/Keypad'
+import { WindowTitleBar } from '../components/layout/WindowTitleBar'
 import { ModeSelector } from '../components/calculator/ModeSelector'
 import { GlassCard } from '../components/common/GlassCard'
 import { ConvertersPanel } from '../components/panels/ConvertersPanel'
@@ -15,6 +16,7 @@ import { useCurrencyAutoRefresh } from '../hooks/useCurrencyAutoRefresh'
 import { useKeyboardInput } from '../hooks/useKeyboardInput'
 import { useLanguageSync } from '../hooks/useLanguageSync'
 import { useThemeSync } from '../hooks/useThemeSync'
+import { detectLanguageByIp } from '../providers/language/ipLanguageService'
 import {
   supportedCurrencies,
   useCalculatorStore,
@@ -132,11 +134,26 @@ export function CalculatorApp() {
   const converterMode =
     mode === 'unit' ? 'unit' : mode === 'currency' ? 'currency' : 'other'
 
+  const handleDetectLanguageByIp = async () => {
+    const detected = await detectLanguageByIp()
+    setLanguage(detected)
+    return detected
+  }
+
   return (
     <div className="relative min-h-screen bg-app-gradient px-4 py-6 text-slate-900 transition-colors dark:text-slate-100 md:px-6 lg:px-8">
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(34,211,238,0.18),transparent_30%),radial-gradient(circle_at_bottom_right,rgba(16,185,129,0.13),transparent_36%)] dark:bg-[radial-gradient(circle_at_top_left,rgba(8,145,178,0.24),transparent_34%),radial-gradient(circle_at_bottom_right,rgba(5,150,105,0.16),transparent_40%)]" />
+      <div className="pointer-events-none absolute -left-16 top-12 h-52 w-52 rounded-full bg-cyan-300/30 blur-3xl animate-ambient-float dark:bg-cyan-600/25" />
+      <div className="pointer-events-none absolute bottom-10 right-8 h-64 w-64 rounded-full bg-emerald-300/20 blur-3xl animate-ambient-float-delayed dark:bg-emerald-600/20" />
 
-      <main className="relative mx-auto flex w-full max-w-[1440px] flex-col gap-4">
+      <motion.main
+        initial={{ opacity: 0, y: 6 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.26, ease: 'easeOut' }}
+        className="relative mx-auto flex w-full max-w-[1440px] flex-col gap-4"
+      >
+        <WindowTitleBar subtitle={modeLabel} />
+
         <GlassCard className="p-5">
           <div className="flex flex-wrap items-start justify-between gap-4">
             <div>
@@ -332,6 +349,7 @@ export function CalculatorApp() {
                     angleMode={angleMode}
                     onThemeChange={setTheme}
                     onLanguageChange={setLanguage}
+                    onDetectLanguageByIp={handleDetectLanguageByIp}
                     onAngleModeChange={setAngleMode}
                   />
                 </motion.div>
@@ -339,7 +357,7 @@ export function CalculatorApp() {
             </AnimatePresence>
           </GlassCard>
         </div>
-      </main>
+      </motion.main>
     </div>
   )
 }

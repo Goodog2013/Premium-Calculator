@@ -26,7 +26,9 @@ GreatCalc is not a basic calculator clone. It is a polished premium-tech app foc
 - Keyboard support and shortcuts
 - Light / dark / system themes
 - Language setting (50 most-used world languages)
+- IP-based language detection button in Settings
 - Persistent state between sessions
+- Custom desktop title bar with minimize / maximize / close controls
 
 ### 💱 Currency Rates
 - Live providers:
@@ -35,6 +37,10 @@ GreatCalc is not a basic calculator clone. It is a polished premium-tech app foc
 - Offline fallback provider when network is unavailable
 - Automatic background refresh every 5 minutes
 - Refresh on app focus/network return
+
+### 🧱 Installer Styling
+- Custom NSIS installer visuals (header + sidebar + icon)
+- Custom WiX installer visuals (banner + welcome/finish image)
 
 ### 🛠 Tech Stack
 - Frontend: React 19, TypeScript, Vite, TailwindCSS, Zustand
@@ -150,7 +156,9 @@ GreatCalc — это не обычный калькулятор, а desktop-пр
 - Поддержка клавиатуры и горячих клавиш
 - Светлая / темная / системная темы
 - Настройка языка (50 самых популярных языков)
+- Кнопка определения языка по IP в Settings
 - Сохранение состояния между сессиями
+- Кастомная верхняя панель окна (свернуть / развернуть / закрыть)
 
 ### 💱 Курсы валют
 - Live-провайдеры:
@@ -159,6 +167,10 @@ GreatCalc — это не обычный калькулятор, а desktop-пр
 - Резервный офлайн-провайдер при отсутствии сети
 - Автообновление в фоне каждые 5 минут
 - Обновление при возврате в окно приложения и при восстановлении сети
+
+### 🧱 Стиль установщика
+- Кастомные визуалы NSIS (header + sidebar + icon)
+- Кастомные визуалы WiX (banner + welcome/finish image)
 
 ### 🛠 Технологии
 - Frontend: React 19, TypeScript, Vite, TailwindCSS, Zustand

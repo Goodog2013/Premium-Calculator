@@ -22,6 +22,7 @@
     "build:web": "node scripts/clean-web-dist.mjs && tsc -b && vite build"
   },
   "dependencies": {
+    "@tauri-apps/api": "^2.10.1",
     "clsx": "^2.1.1",
     "framer-motion": "^12.38.0",
     "lucide-react": "^1.8.0",

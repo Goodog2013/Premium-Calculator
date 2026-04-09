@@ -20,7 +20,7 @@
         "minHeight": 760,
         "resizable": true,
         "fullscreen": false,
-        "decorations": true,
+        "decorations": false,
         "transparent": false
       }
     ],
@@ -40,7 +40,19 @@
     "targets": "all",
     "windows": {
       "wix": {
-        "language": "en-US"
+        "language": "en-US",
+        "bannerPath": "installer-assets/wix-banner.bmp",
+        "dialogImagePath": "installer-assets/wix-dialog.bmp"
+      },
+      "nsis": {
+        "installerIcon": "icons/icon.ico",
+        "headerImage": "installer-assets/nsis-header.bmp",
+        "sidebarImage": "installer-assets/nsis-sidebar.bmp",
+        "languages": [
+          "English",
+          "Russian"
+        ],
+        "displayLanguageSelector": true
       }
     }
   }

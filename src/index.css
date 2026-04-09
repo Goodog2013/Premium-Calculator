@@ -90,3 +90,27 @@ body {
 ::selection {
   background: rgba(6, 182, 212, 0.3);
 }
+
+@keyframes ambient-float {
+  0% {
+    transform: translate3d(0, 0, 0) scale(1);
+    opacity: 0.45;
+  }
+  50% {
+    transform: translate3d(0, -18px, 0) scale(1.06);
+    opacity: 0.62;
+  }
+  100% {
+    transform: translate3d(0, 0, 0) scale(1);
+    opacity: 0.45;
+  }
+}
+
+.animate-ambient-float {
+  animation: ambient-float 9s ease-in-out infinite;
+}
+
+.animate-ambient-float-delayed {
+  animation: ambient-float 11s ease-in-out infinite;
+  animation-delay: 1.6s;
+}
