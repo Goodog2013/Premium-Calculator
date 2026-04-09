@@ -1,6 +1,6 @@
-const LANGUAGE_OPTIONS = [
+﻿const LANGUAGE_OPTIONS = [
   { code: 'en-US', englishName: 'English', nativeName: 'English' },
-  { code: 'zh-CN', englishName: 'Mandarin Chinese', nativeName: '中文（简体）' },
+  { code: 'zh-CN', englishName: 'Mandarin Chinese', nativeName: '中文 (简体)' },
   { code: 'hi-IN', englishName: 'Hindi', nativeName: 'हिन्दी' },
   { code: 'es-ES', englishName: 'Spanish', nativeName: 'Español' },
   { code: 'fr-FR', englishName: 'French', nativeName: 'Français' },

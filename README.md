@@ -94,7 +94,7 @@ Desktop installers (`.exe` + `.msi`):
 npm run build:desktop
 ```
 
-Custom installer from scratch (PowerShell-based, without Inno Setup):
+Custom installer from scratch (custom GUI EXE, without Inno Setup):
 
 ```bash
 npm run build:installer:custom
@@ -123,19 +123,19 @@ cmd /c 'call "C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Auxilia
 - `src-tauri/target/release/bundle/msi/GreatCalc_0.1.0_x64_en-US.msi`
 - `Releases/desktop/`
 - `Releases/web/`
-- `Releases/custom-installer/GreatCalc_0.1.0_custom-installer/`
-- `Releases/custom-installer/GreatCalc_0.1.0_custom-installer.zip`
+- `Releases/custom-installer/GreatCalc_0.1.0_custom-installer.exe`
+- `Releases/portable/GreatCalc_0.1.0_portable.zip`
 
 ### 🧰 Custom Installer (No Inno)
-- Installer source code: `installer/custom/Install-GreatCalc.ps1`
-- Uninstaller source code: `installer/custom/Uninstall-GreatCalc.ps1`
-- Launcher: `installer/custom/Run-Installer.cmd`
+- Installer UI source code: `installer/gui-installer/GreatCalcInstaller/InstallerForm.cs`
+- Install/uninstall backend: `installer/gui-installer/GreatCalcInstaller/InstallerBackend.cs`
 - Package builder: `scripts/build-custom-installer.mjs`
 - Installer behavior:
-- requests admin rights (UAC)
-- installs `greatcalc.exe` into `Program Files\GreatCalc`
-- creates Start Menu shortcut (+ optional desktop shortcut)
-- registers uninstall entry in Windows Apps & Features
+- portable-first setup (no admin rights required)
+- supports custom install path
+- optional Desktop and Start Menu shortcuts
+- shows and requires license acceptance
+- ships as self-contained single-file EXE
 
 ### ✅ Tests & Quality
 ```bash
@@ -269,7 +269,7 @@ Desktop-инсталлеры (`.exe` + `.msi`):
 npm run build:desktop
 ```
 
-Кастомный установщик с нуля (PowerShell, без Inno Setup):
+Кастомный установщик с нуля (GUI EXE, без Inno Setup):
 
 ```bash
 npm run build:installer:custom
@@ -298,19 +298,19 @@ cmd /c 'call "C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Auxilia
 - `src-tauri/target/release/bundle/msi/GreatCalc_0.1.0_x64_en-US.msi`
 - `Releases/desktop/`
 - `Releases/web/`
-- `Releases/custom-installer/GreatCalc_0.1.0_custom-installer/`
-- `Releases/custom-installer/GreatCalc_0.1.0_custom-installer.zip`
+- `Releases/custom-installer/GreatCalc_0.1.0_custom-installer.exe`
+- `Releases/portable/GreatCalc_0.1.0_portable.zip`
 
 ### 🧰 Кастомный установщик (Без Inno)
-- Исходник установщика: `installer/custom/Install-GreatCalc.ps1`
-- Исходник деинсталлятора: `installer/custom/Uninstall-GreatCalc.ps1`
-- Лаунчер: `installer/custom/Run-Installer.cmd`
+- UI установщика: `installer/gui-installer/GreatCalcInstaller/InstallerForm.cs`
+- Логика установки/удаления: `installer/gui-installer/GreatCalcInstaller/InstallerBackend.cs`
 - Скрипт упаковки: `scripts/build-custom-installer.mjs`
 - Что делает установщик:
-- запрашивает права администратора (UAC)
-- устанавливает `greatcalc.exe` в `Program Files\GreatCalc`
-- создает ярлык в меню Пуск (и опционально на рабочем столе)
-- регистрирует удаление в Windows Apps & Features
+- portable-first установка (без прав администратора)
+- поддерживает кастомный путь установки
+- дает выбор ярлыков для Рабочего стола и меню Пуск
+- показывает лицензию и требует ее принятия
+- поставляется как self-contained single-file EXE
 
 ### ✅ Тесты и качество
 ```bash

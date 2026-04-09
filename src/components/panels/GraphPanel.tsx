@@ -1,4 +1,4 @@
-﻿import {
+import {
   CartesianGrid,
   Line,
   LineChart,
@@ -7,9 +7,12 @@
   XAxis,
   YAxis,
 } from 'recharts'
+import type { AppLanguageCode } from '../../i18n/languages'
+import { pickUiText } from '../../i18n/uiText'
 import { GraphState } from '../../types/calculator'
 
 interface GraphPanelProps {
+  language: AppLanguageCode
   graph: GraphState
   onExpressionChange: (expression: string) => void
   onWindowChange: (xMin: number, xMax: number) => void
@@ -17,16 +20,23 @@ interface GraphPanelProps {
 }
 
 export function GraphPanel({
+  language,
   graph,
   onExpressionChange,
   onWindowChange,
   onRebuild,
 }: GraphPanelProps) {
+  const titleLabel = pickUiText(language, 'Graph lab', 'Графический режим')
+  const rebuildLabel = pickUiText(language, 'Rebuild', 'Перестроить')
+  const xMinLabel = pickUiText(language, 'X min', 'X мин')
+  const xMaxLabel = pickUiText(language, 'X max', 'X макс')
+  const sampledLabel = pickUiText(language, 'sampled points', 'точек на графике')
+
   return (
     <section className="space-y-3 rounded-3xl border border-slate-300/70 bg-white/70 p-4 shadow-soft backdrop-blur-xl dark:border-slate-700 dark:bg-slate-900/60">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <h3 className="text-sm font-semibold uppercase tracking-[0.12em] text-slate-600 dark:text-slate-300">
-          Graph lab
+          {titleLabel}
         </h3>
 
         <button
@@ -34,7 +44,7 @@ export function GraphPanel({
           onClick={onRebuild}
           className="rounded-xl border border-slate-300/70 px-3 py-1.5 text-xs font-medium text-slate-600 transition hover:border-cyan-400/70 dark:border-slate-700 dark:text-slate-300"
         >
-          Rebuild
+          {rebuildLabel}
         </button>
       </div>
 
@@ -50,7 +60,7 @@ export function GraphPanel({
         </label>
 
         <label className="text-xs font-medium text-slate-600 dark:text-slate-300">
-          X min
+          {xMinLabel}
           <input
             type="number"
             value={graph.xMin}
@@ -62,7 +72,7 @@ export function GraphPanel({
         </label>
 
         <label className="text-xs font-medium text-slate-600 dark:text-slate-300">
-          X max
+          {xMaxLabel}
           <input
             type="number"
             value={graph.xMax}
@@ -74,7 +84,7 @@ export function GraphPanel({
         </label>
 
         <div className="rounded-xl border border-slate-300/70 px-3 py-2 text-xs text-slate-500 dark:border-slate-700 dark:text-slate-400">
-          {graph.points.length} sampled points
+          {graph.points.length} {sampledLabel}
         </div>
       </div>
 
@@ -109,4 +119,3 @@ export function GraphPanel({
     </section>
   )
 }
-

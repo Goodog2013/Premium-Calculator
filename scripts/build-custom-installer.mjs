@@ -1,74 +1,105 @@
-﻿import { access, cp, mkdir, readFile, rm, writeFile } from 'node:fs/promises'
-import { resolve, basename } from 'node:path'
+﻿import { access, copyFile, mkdir, readFile, rm } from 'node:fs/promises'
+import { resolve } from 'node:path'
 import { spawnSync } from 'node:child_process'
 
 const rootDir = process.cwd()
 const tauriConfigPath = resolve(rootDir, 'src-tauri', 'tauri.conf.json')
-const templateDir = resolve(rootDir, 'installer', 'custom')
-const releaseExePath = resolve(rootDir, 'src-tauri', 'target', 'release', 'greatcalc.exe')
-const releasesRoot = resolve(rootDir, 'Releases', 'custom-installer')
+const desktopExePath = resolve(rootDir, 'src-tauri', 'target', 'release', 'greatcalc.exe')
+const installerProjectDir = resolve(rootDir, 'installer', 'gui-installer', 'GreatCalcInstaller')
+const installerProjectPath = resolve(installerProjectDir, 'GreatCalcInstaller.csproj')
+const payloadPath = resolve(installerProjectDir, 'Payload', 'greatcalc.exe')
+const publishDir = resolve(installerProjectDir, 'bin', 'Release', 'net8.0-windows', 'win-x64', 'publish')
+const publishedInstallerExe = resolve(publishDir, 'GreatCalcInstaller.exe')
+const releasesDir = resolve(rootDir, 'Releases', 'custom-installer')
+const portableReleasesDir = resolve(rootDir, 'Releases', 'portable')
+const portableStageDir = resolve(portableReleasesDir, 'stage')
+const licensePath = resolve(rootDir, 'LICENSE')
 
 const tauriConfig = JSON.parse(await readFile(tauriConfigPath, 'utf8'))
 const productName = tauriConfig.productName ?? 'GreatCalc'
 const version = tauriConfig.version ?? '0.0.0'
+const fileVersion = version
+  .split('.')
+  .map((item) => item.trim())
+  .filter((item) => item.length > 0)
+  .concat(['0', '0', '0', '0'])
+  .slice(0, 4)
+  .join('.')
 
 try {
-  await access(releaseExePath)
+  await access(desktopExePath)
 } catch {
-  throw new Error(
-    `Desktop binary not found at ${releaseExePath}. Run \"npm run build:desktop\" first.`,
-  )
+  throw new Error(`Desktop binary not found at ${desktopExePath}. Run \"npm run build:desktop\" first.`)
 }
 
-const packageFolderName = `${productName}_${version}_custom-installer`
-const packageDir = resolve(releasesRoot, packageFolderName)
-const payloadDir = resolve(packageDir, 'payload')
-const zipPath = resolve(releasesRoot, `${packageFolderName}.zip`)
+await mkdir(resolve(installerProjectDir, 'Payload'), { recursive: true })
+await copyFile(desktopExePath, payloadPath)
 
-await mkdir(releasesRoot, { recursive: true })
-await rm(packageDir, { recursive: true, force: true })
-await rm(zipPath, { force: true })
+const publishArgs = [
+  'publish',
+  installerProjectPath,
+  '-c',
+  'Release',
+  '-r',
+  'win-x64',
+  '--self-contained',
+  'true',
+  '/p:PublishSingleFile=true',
+  '/p:IncludeNativeLibrariesForSelfExtract=true',
+  '/p:EnableCompressionInSingleFile=true',
+  `/p:Version=${version}`,
+  `/p:FileVersion=${fileVersion}`,
+  `/p:AssemblyVersion=${fileVersion}`,
+]
 
-await cp(templateDir, packageDir, { recursive: true, force: true })
-await mkdir(payloadDir, { recursive: true })
-await cp(releaseExePath, resolve(payloadDir, basename(releaseExePath)), { force: true })
-await writeFile(resolve(packageDir, 'VERSION.txt'), `${version}\n`, 'utf8')
+const publishRun = spawnSync('dotnet', publishArgs, {
+  cwd: rootDir,
+  stdio: 'inherit',
+})
 
-const notes = [
-  `${productName} Custom Installer Package`,
-  `Version: ${version}`,
-  '',
-  'This installer is implemented from scratch for this project (PowerShell-based),',
-  'without Inno Setup.',
-  '',
-  'Usage:',
-  '1. Open package folder.',
-  '2. Run Run-Installer.cmd (or Install-GreatCalc.ps1).',
-  '3. Approve UAC prompt.',
-  '',
-  'Uninstall:',
-  '- Run "Uninstall-GreatCalc.cmd" from installation directory,',
-  '  or use Apps & Features entry "GreatCalc".',
-  '',
-].join('\n')
+if (publishRun.status !== 0) {
+  throw new Error('Failed to publish custom installer project')
+}
 
-await writeFile(resolve(packageDir, 'INSTALLER-NOTES.txt'), notes, 'utf8')
+try {
+  await access(publishedInstallerExe)
+} catch {
+  throw new Error(`Published installer EXE not found: ${publishedInstallerExe}`)
+}
 
-const compressionCommand = [
-  `$src = '${packageDir.replace(/'/g, "''")}\\*'`,
-  `$dst = '${zipPath.replace(/'/g, "''")}'`,
-  'Compress-Archive -Path $src -DestinationPath $dst -Force',
-].join('; ')
+await rm(releasesDir, { recursive: true, force: true })
+await rm(portableReleasesDir, { recursive: true, force: true })
+await mkdir(releasesDir, { recursive: true })
+await mkdir(portableStageDir, { recursive: true })
 
-const compression = spawnSync(
+const installerFileName = `${productName}_${version}_custom-installer.exe`
+const installerOutputPath = resolve(releasesDir, installerFileName)
+const portableExePath = resolve(portableStageDir, `${productName}.exe`)
+const portableLicensePath = resolve(portableStageDir, 'LICENSE.txt')
+const portableZipPath = resolve(portableReleasesDir, `${productName}_${version}_portable.zip`)
+
+await copyFile(publishedInstallerExe, installerOutputPath)
+await copyFile(desktopExePath, portableExePath)
+await copyFile(licensePath, portableLicensePath)
+
+const zipRun = spawnSync(
   'powershell',
-  ['-NoProfile', '-ExecutionPolicy', 'Bypass', '-Command', compressionCommand],
-  { stdio: 'inherit' },
+  [
+    '-NoProfile',
+    '-Command',
+    `Compress-Archive -Path \"${portableStageDir}\\*\" -DestinationPath \"${portableZipPath}\" -Force`,
+  ],
+  {
+    cwd: rootDir,
+    stdio: 'inherit',
+  },
 )
 
-if (compression.status !== 0) {
-  throw new Error('Failed to create custom installer zip package')
+if (zipRun.status !== 0) {
+  throw new Error('Failed to create portable ZIP package')
 }
 
-console.log(`[custom-installer] package dir: ${packageDir}`)
-console.log(`[custom-installer] zip: ${zipPath}`)
+await rm(portableStageDir, { recursive: true, force: true })
+
+console.log(`[custom-installer] exe: ${installerOutputPath}`)
+console.log(`[portable] zip: ${portableZipPath}`)

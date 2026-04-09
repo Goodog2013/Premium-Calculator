@@ -18,6 +18,7 @@ import { useCurrencyAutoRefresh } from '../hooks/useCurrencyAutoRefresh'
 import { useKeyboardInput } from '../hooks/useKeyboardInput'
 import { useLanguageSync } from '../hooks/useLanguageSync'
 import { useThemeSync } from '../hooks/useThemeSync'
+import { pickUiText } from '../i18n/uiText'
 import { detectLanguageByIp } from '../providers/language/ipLanguageService'
 import { listAllConverterPlugins } from '../providers/converterPlugins/pluginService'
 import {
@@ -28,12 +29,6 @@ import { useConverterPluginStore } from '../state/converterPluginStore'
 import { useSymbolicStore } from '../state/symbolicStore'
 import { SidePanelTab } from '../types/calculator'
 import { cn } from '../utils/cn'
-
-const sideTabs: Array<{ id: SidePanelTab; label: string; icon: typeof History }> = [
-  { id: 'history', label: 'History', icon: History },
-  { id: 'favorites', label: 'Favorites', icon: Star },
-  { id: 'settings', label: 'Settings', icon: Settings },
-]
 
 export function CalculatorApp() {
   useThemeSync()
@@ -157,17 +152,35 @@ export function CalculatorApp() {
 
   const modeLabel = useMemo(() => {
     const map = {
-      standard: 'Standard mode',
-      scientific: 'Scientific mode',
-      symbolic: 'Symbolic mode',
-      programmer: 'Programmer mode',
-      unit: 'Unit converter',
-      currency: 'Currency converter',
-      graph: 'Graph mode',
+      standard: pickUiText(language, 'Standard mode', 'Стандартный режим'),
+      scientific: pickUiText(language, 'Scientific mode', 'Научный режим'),
+      symbolic: pickUiText(language, 'Symbolic mode', 'Символьный режим'),
+      programmer: pickUiText(language, 'Programmer mode', 'Режим программиста'),
+      unit: pickUiText(language, 'Unit converter', 'Конвертер единиц'),
+      currency: pickUiText(language, 'Currency converter', 'Конвертер валют'),
+      graph: pickUiText(language, 'Graph mode', 'Графический режим'),
     } satisfies Record<typeof mode, string>
 
     return map[mode]
-  }, [mode])
+  }, [language, mode])
+
+  const sideTabs: Array<{ id: SidePanelTab; label: string; icon: typeof History }> = [
+    {
+      id: 'history',
+      label: pickUiText(language, 'History', 'История'),
+      icon: History,
+    },
+    {
+      id: 'favorites',
+      label: pickUiText(language, 'Favorites', 'Избранное'),
+      icon: Star,
+    },
+    {
+      id: 'settings',
+      label: pickUiText(language, 'Settings', 'Настройки'),
+      icon: Settings,
+    },
+  ]
 
   const handleCopy = async (): Promise<void> => {
     await copyToClipboard(result)
@@ -180,6 +193,11 @@ export function CalculatorApp() {
 
   const converterMode =
     mode === 'unit' ? 'unit' : mode === 'currency' ? 'currency' : 'other'
+  const isCalculatorMode =
+    mode === 'standard' || mode === 'scientific' || mode === 'programmer'
+  const isConverterMode = mode === 'unit' || mode === 'currency'
+  const shouldShowWorkspacePanels = !isAdvancedCollapsed || !isCalculatorMode
+  const showPluginPanel = mode === 'unit' && !isAdvancedCollapsed
 
   const handleDetectLanguageByIp = async () => {
     const detected = await detectLanguageByIp()
@@ -196,6 +214,20 @@ export function CalculatorApp() {
     () => userPlugins.map((plugin) => plugin.id),
     [userPlugins],
   )
+
+  const heroBadgeLabel = pickUiText(language, 'GreatCalc', 'GreatCalc')
+  const heroTitleLabel = pickUiText(
+    language,
+    'Premium Desktop Calculator',
+    'Премиальный Desktop Калькулятор',
+  )
+  const heroSubtitleLabel = pickUiText(
+    language,
+    'Crafted for speed and precision: scientific math, symbolic algebra, plugin converters, and a real-time graph lab in one focused interface.',
+    'Создан для скорости и точности: научная математика, символьная алгебра, плагинные конвертеры и графический режим в одном удобном интерфейсе.',
+  )
+  const readyLabel = pickUiText(language, 'Ready', 'Готово')
+  const copiedLabel = pickUiText(language, 'Copied', 'Скопировано')
 
   return (
     <div className="relative min-h-screen bg-app-gradient px-4 py-6 text-slate-900 transition-colors dark:text-slate-100 md:px-6 lg:px-8">
@@ -215,15 +247,13 @@ export function CalculatorApp() {
           <div className="flex flex-wrap items-start justify-between gap-4">
             <div>
               <p className="text-[11px] uppercase tracking-[0.28em] text-cyan-700 dark:text-cyan-300">
-                GreatCalc
+                {heroBadgeLabel}
               </p>
               <h1 className="mt-2 font-display text-3xl leading-tight text-slate-950 dark:text-white md:text-4xl">
-                Premium Desktop Calculator
+                {heroTitleLabel}
               </h1>
               <p className="mt-2 max-w-2xl text-sm text-slate-600 dark:text-slate-300">
-                Crafted for speed and precision: scientific math, symbolic algebra,
-                plugin converters, and a real-time graph lab in one focused
-                interface.
+                {heroSubtitleLabel}
               </p>
             </div>
 
@@ -235,13 +265,14 @@ export function CalculatorApp() {
                   : 'border-slate-300/70 bg-white/70 text-slate-600 dark:border-slate-700 dark:bg-slate-900/60 dark:text-slate-300',
               )}
             >
-              {copyStatus === 'done' ? 'Copied' : 'Ready'}
+              {copyStatus === 'done' ? copiedLabel : readyLabel}
             </div>
           </div>
         </GlassCard>
 
         <GlassCard>
           <ModeSelector
+            language={language}
             mode={mode}
             isCollapsed={isAdvancedCollapsed}
             onModeChange={setMode}
@@ -258,135 +289,117 @@ export function CalculatorApp() {
           )}
         >
           <div className="space-y-4">
-            <ExpressionDisplay
-              expression={expression}
-              result={result}
-              preview={preview}
-              error={error}
-              modeLabel={modeLabel}
-              angleLabel={angleMode.toUpperCase()}
-              memoryValue={memoryValue}
-              onCopy={() => void handleCopy()}
-              onSaveFavorite={() => addFavorite()}
-            />
+            {isCalculatorMode && (
+              <ExpressionDisplay
+                language={language}
+                expression={expression}
+                result={result}
+                preview={preview}
+                error={error}
+                modeLabel={modeLabel}
+                angleLabel={angleMode.toUpperCase()}
+                memoryValue={memoryValue}
+                onCopy={() => void handleCopy()}
+                onSaveFavorite={() => addFavorite()}
+              />
+            )}
 
-            {!isAdvancedCollapsed && (
-              <>
-                <AnimatePresence mode="wait">
-                  {mode === 'graph' && (
-                    <motion.div
-                      key="graph"
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: -8 }}
-                      transition={{ duration: 0.2 }}
-                    >
-                      <GraphPanel
-                        graph={graph}
-                        onExpressionChange={setGraphExpression}
-                        onWindowChange={setGraphWindow}
-                        onRebuild={rebuildGraph}
-                      />
-                    </motion.div>
-                  )}
-
-                  {mode === 'symbolic' && (
-                    <motion.div
-                      key="symbolic"
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: -8 }}
-                      transition={{ duration: 0.2 }}
-                    >
-                      <SymbolicPanel
-                        solveExpression={solveExpression}
-                        solveVariable={solveVariable}
-                        solveResult={solveResult}
-                        factorExpression={factorExpression}
-                        factorResult={factorResult}
-                        simplifyExpression={simplifyExpression}
-                        simplifyResult={simplifyResult}
-                        error={symbolicError}
-                        onSolveExpressionChange={setSolveExpression}
-                        onSolveVariableChange={setSolveVariable}
-                        onSolve={solve}
-                        onFactorExpressionChange={setFactorExpression}
-                        onFactorize={factorize}
-                        onSimplifyExpressionChange={setSimplifyExpression}
-                        onSimplify={simplify}
-                      />
-                    </motion.div>
-                  )}
-
-                  {(mode === 'unit' || mode === 'currency' || mode === 'standard') && (
-                    <motion.div
-                      key="converter"
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: -8 }}
-                      transition={{ duration: 0.2 }}
-                    >
-                      <ConvertersPanel
-                        mode={converterMode}
-                        language={language}
-                        unitState={unitConverter}
-                        currencyState={currencyConverter}
-                        supportedCurrencies={supportedCurrencies}
-                        onUnitCategoryChange={setUnitCategory}
-                        onUnitFromChange={setUnitFrom}
-                        onUnitToChange={setUnitTo}
-                        onUnitInputChange={setUnitInput}
-                        onCurrencyBaseChange={setCurrencyBase}
-                        onCurrencyQuoteChange={setCurrencyQuote}
-                        onCurrencyAmountChange={setCurrencyAmount}
-                        onCurrencyRefresh={() => refreshCurrencyRates({ force: true })}
-                      />
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-
-                {(mode === 'unit' || mode === 'standard') && (
+            {shouldShowWorkspacePanels && (
+              <AnimatePresence mode="wait">
+                {mode === 'graph' && (
                   <motion.div
-                    key="plugin-converters"
+                    key="graph"
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -8 }}
                     transition={{ duration: 0.2 }}
                   >
-                    <PluginConvertersPanel
-                      plugins={availablePlugins}
-                      userPluginIds={userPluginIds}
-                      pluginState={pluginConverter}
-                      pluginDraft={pluginDraft}
-                      pluginManagerError={pluginManagerError}
-                      onPluginChange={setPluginId}
-                      onFromUnitChange={setPluginFromUnit}
-                      onToUnitChange={setPluginToUnit}
-                      onInputChange={setPluginInputValue}
-                      onPluginDraftChange={setPluginDraft}
-                      onAddPlugin={addPluginFromDraft}
-                      onRemovePlugin={removeUserPlugin}
+                    <GraphPanel
+                      language={language}
+                      graph={graph}
+                      onExpressionChange={setGraphExpression}
+                      onWindowChange={setGraphWindow}
+                      onRebuild={rebuildGraph}
                     />
                   </motion.div>
                 )}
-              </>
+
+                {mode === 'symbolic' && (
+                  <motion.div
+                    key="symbolic"
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -8 }}
+                    transition={{ duration: 0.2 }}
+                  >
+                    <SymbolicPanel
+                      language={language}
+                      solveExpression={solveExpression}
+                      solveVariable={solveVariable}
+                      solveResult={solveResult}
+                      factorExpression={factorExpression}
+                      factorResult={factorResult}
+                      simplifyExpression={simplifyExpression}
+                      simplifyResult={simplifyResult}
+                      error={symbolicError}
+                      onSolveExpressionChange={setSolveExpression}
+                      onSolveVariableChange={setSolveVariable}
+                      onSolve={solve}
+                      onFactorExpressionChange={setFactorExpression}
+                      onFactorize={factorize}
+                      onSimplifyExpressionChange={setSimplifyExpression}
+                      onSimplify={simplify}
+                    />
+                  </motion.div>
+                )}
+
+                {isConverterMode && (
+                  <motion.div
+                    key="converter"
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -8 }}
+                    transition={{ duration: 0.2 }}
+                  >
+                    <ConvertersPanel
+                      mode={converterMode}
+                      language={language}
+                      unitState={unitConverter}
+                      currencyState={currencyConverter}
+                      supportedCurrencies={supportedCurrencies}
+                      onUnitCategoryChange={setUnitCategory}
+                      onUnitFromChange={setUnitFrom}
+                      onUnitToChange={setUnitTo}
+                      onUnitInputChange={setUnitInput}
+                      onCurrencyBaseChange={setCurrencyBase}
+                      onCurrencyQuoteChange={setCurrencyQuote}
+                      onCurrencyAmountChange={setCurrencyAmount}
+                      onCurrencyRefresh={() => refreshCurrencyRates({ force: true })}
+                    />
+                  </motion.div>
+                )}
+              </AnimatePresence>
             )}
 
-            <Keypad
-              mode={mode}
-              angleMode={angleMode}
-              programmerBase={programmerBase}
-              onAngleModeChange={setAngleMode}
-              onBaseChange={setProgrammerBase}
-              onAppend={appendToken}
-              onEvaluate={evaluate}
-              onBackspace={backspace}
-              onClear={clearExpression}
-              onMemoryClear={memoryClear}
-              onMemoryRecall={memoryRecall}
-              onMemoryAdd={memoryAdd}
-              onMemorySubtract={memorySubtract}
-              onMemoryStore={memoryStore}
-            />
+            {isCalculatorMode && (
+              <Keypad
+                language={language}
+                mode={mode}
+                angleMode={angleMode}
+                programmerBase={programmerBase}
+                onAngleModeChange={setAngleMode}
+                onBaseChange={setProgrammerBase}
+                onAppend={appendToken}
+                onEvaluate={evaluate}
+                onBackspace={backspace}
+                onClear={clearExpression}
+                onMemoryClear={memoryClear}
+                onMemoryRecall={memoryRecall}
+                onMemoryAdd={memoryAdd}
+                onMemorySubtract={memorySubtract}
+                onMemoryStore={memoryStore}
+              />
+            )}
           </div>
 
           <GlassCard className="h-fit min-h-[420px]">
@@ -441,6 +454,7 @@ export function CalculatorApp() {
                   transition={{ duration: 0.16 }}
                 >
                   <FavoritesPanel
+                    language={language}
                     favorites={favorites}
                     onUse={applyFavorite}
                     onRemove={removeFavorite}
@@ -470,6 +484,31 @@ export function CalculatorApp() {
             </AnimatePresence>
           </GlassCard>
         </div>
+
+        {showPluginPanel && (
+          <motion.div
+            key="plugin-converters"
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.2 }}
+          >
+            <PluginConvertersPanel
+              language={language}
+              plugins={availablePlugins}
+              userPluginIds={userPluginIds}
+              pluginState={pluginConverter}
+              pluginDraft={pluginDraft}
+              pluginManagerError={pluginManagerError}
+              onPluginChange={setPluginId}
+              onFromUnitChange={setPluginFromUnit}
+              onToUnitChange={setPluginToUnit}
+              onInputChange={setPluginInputValue}
+              onPluginDraftChange={setPluginDraft}
+              onAddPlugin={addPluginFromDraft}
+              onRemovePlugin={removeUserPlugin}
+            />
+          </motion.div>
+        )}
       </motion.main>
     </div>
   )

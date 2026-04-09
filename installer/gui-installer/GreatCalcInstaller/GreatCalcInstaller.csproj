@@ -1,0 +1,26 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <UseWindowsForms>true</UseWindowsForms>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <AssemblyName>GreatCalcInstaller</AssemblyName>
+    <RootNamespace>GreatCalcInstaller</RootNamespace>
+    <ApplicationIcon>..\..\..\src\ico\1.ico</ApplicationIcon>
+    <Version Condition="'$(Version)'==''">0.1.0</Version>
+    <FileVersion Condition="'$(FileVersion)'==''">0.1.0.0</FileVersion>
+    <AssemblyVersion Condition="'$(AssemblyVersion)'==''">0.1.0.0</AssemblyVersion>
+    <PublishSingleFile>true</PublishSingleFile>
+    <SelfContained>true</SelfContained>
+    <PublishTrimmed>false</PublishTrimmed>
+    <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
+    <EnableCompressionInSingleFile>true</EnableCompressionInSingleFile>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Payload\greatcalc.exe" LogicalName="GreatCalcInstaller.Payload.greatcalc.exe" Condition="Exists('Payload\\greatcalc.exe')" />
+    <EmbeddedResource Include="..\..\..\LICENSE" LogicalName="GreatCalcInstaller.Assets.LICENSE.txt" />
+  </ItemGroup>
+</Project>

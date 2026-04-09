@@ -56,7 +56,7 @@ export function WindowTitleBar({ subtitle }: WindowTitleBarProps) {
       initial={{ opacity: 0, y: -8 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.28, ease: 'easeOut' }}
-      className="relative mx-auto flex w-full max-w-[1440px] items-center justify-between rounded-2xl border border-white/30 bg-white/65 px-3 py-2 shadow-soft backdrop-blur-xl dark:border-white/10 dark:bg-slate-900/55"
+      className="sticky top-0 z-50 relative mx-auto flex w-full max-w-[1440px] items-center justify-between rounded-2xl border border-white/30 bg-white/80 px-3 py-2 shadow-soft backdrop-blur-xl dark:border-white/10 dark:bg-slate-900/70"
       data-tauri-drag-region
     >
       <div className="pointer-events-none absolute inset-0 rounded-2xl bg-[linear-gradient(140deg,rgba(34,211,238,0.12),transparent_45%)] dark:bg-[linear-gradient(140deg,rgba(14,116,144,0.2),transparent_45%)]" />

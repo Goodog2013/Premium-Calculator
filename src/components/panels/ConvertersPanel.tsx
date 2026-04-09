@@ -1,6 +1,7 @@
 import { RefreshCw } from 'lucide-react'
 import { unitCatalog } from '../../converters/unitCatalog'
 import type { AppLanguageCode } from '../../i18n/languages'
+import { pickUiText } from '../../i18n/uiText'
 import {
   CurrencyConverterState,
   UnitConverterState,
@@ -38,6 +39,44 @@ export function ConvertersPanel({
   onCurrencyAmountChange,
   onCurrencyRefresh,
 }: ConvertersPanelProps) {
+  const unitConverterLabel = pickUiText(language, 'Unit converter', 'Конвертер единиц')
+  const categoryLabel = pickUiText(language, 'Category', 'Категория')
+  const valueLabel = pickUiText(language, 'Value', 'Значение')
+  const fromLabel = pickUiText(language, 'From', 'Из')
+  const toLabel = pickUiText(language, 'To', 'В')
+  const resultLabel = pickUiText(language, 'Result', 'Результат')
+
+  const currencyConverterLabel = pickUiText(
+    language,
+    'Currency converter',
+    'Конвертер валют',
+  )
+  const refreshLabel = pickUiText(language, 'Refresh', 'Обновить')
+  const amountLabel = pickUiText(language, 'Amount', 'Сумма')
+  const baseLabel = pickUiText(language, 'Base', 'Базовая')
+  const quoteLabel = pickUiText(language, 'Quote', 'Целевая')
+  const convertedAmountLabel = pickUiText(
+    language,
+    'Converted amount',
+    'Сконвертированная сумма',
+  )
+  const providerLabel = pickUiText(language, 'Provider', 'Провайдер')
+  const autoRefreshLabel = pickUiText(
+    language,
+    'Auto-updates every 5 minutes while app is open.',
+    'Автообновление каждые 5 минут, пока приложение открыто.',
+  )
+  const refreshingLabel = pickUiText(
+    language,
+    'Refreshing rates...',
+    'Обновление курсов...',
+  )
+  const pickModeLabel = pickUiText(
+    language,
+    'Pick Units or Currency mode to open converter workspace.',
+    'Выберите режим единиц или валют, чтобы открыть панель конвертера.',
+  )
+
   if (mode === 'unit') {
     const units =
       unitCatalog.find((entry) => entry.key === unitState.category)?.units ?? []
@@ -45,12 +84,12 @@ export function ConvertersPanel({
     return (
       <section className="space-y-3 rounded-3xl border border-slate-300/70 bg-white/70 p-4 shadow-soft backdrop-blur-xl dark:border-slate-700 dark:bg-slate-900/60">
         <h3 className="text-sm font-semibold uppercase tracking-[0.12em] text-slate-600 dark:text-slate-300">
-          Unit converter
+          {unitConverterLabel}
         </h3>
 
         <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
           <label className="text-xs font-medium text-slate-600 dark:text-slate-300">
-            Category
+            {categoryLabel}
             <select
               value={unitState.category}
               onChange={(event) =>
@@ -67,7 +106,7 @@ export function ConvertersPanel({
           </label>
 
           <label className="text-xs font-medium text-slate-600 dark:text-slate-300">
-            Value
+            {valueLabel}
             <input
               value={unitState.inputValue}
               onChange={(event) => onUnitInputChange(event.target.value)}
@@ -76,7 +115,7 @@ export function ConvertersPanel({
           </label>
 
           <label className="text-xs font-medium text-slate-600 dark:text-slate-300">
-            From
+            {fromLabel}
             <select
               value={unitState.fromUnit}
               onChange={(event) => onUnitFromChange(event.target.value)}
@@ -91,7 +130,7 @@ export function ConvertersPanel({
           </label>
 
           <label className="text-xs font-medium text-slate-600 dark:text-slate-300">
-            To
+            {toLabel}
             <select
               value={unitState.toUnit}
               onChange={(event) => onUnitToChange(event.target.value)}
@@ -108,7 +147,7 @@ export function ConvertersPanel({
 
         <div className="rounded-2xl bg-gradient-to-r from-cyan-50/70 to-teal-50/70 p-4 dark:from-cyan-900/20 dark:to-teal-900/20">
           <p className="text-xs uppercase tracking-[0.14em] text-slate-500 dark:text-slate-400">
-            Result
+            {resultLabel}
           </p>
           <p className="font-display text-3xl text-slate-950 dark:text-white">
             {unitState.outputValue || '0'}
@@ -126,20 +165,20 @@ export function ConvertersPanel({
       <section className="space-y-3 rounded-3xl border border-slate-300/70 bg-white/70 p-4 shadow-soft backdrop-blur-xl dark:border-slate-700 dark:bg-slate-900/60">
         <div className="flex items-center justify-between">
           <h3 className="text-sm font-semibold uppercase tracking-[0.12em] text-slate-600 dark:text-slate-300">
-            Currency converter
+            {currencyConverterLabel}
           </h3>
           <button
             type="button"
             onClick={() => void onCurrencyRefresh()}
             className="inline-flex items-center gap-2 rounded-xl border border-slate-300/70 px-3 py-1.5 text-xs text-slate-600 transition hover:border-cyan-400/70 dark:border-slate-700 dark:text-slate-300"
           >
-            <RefreshCw className="h-3.5 w-3.5" /> Refresh
+            <RefreshCw className="h-3.5 w-3.5" /> {refreshLabel}
           </button>
         </div>
 
         <div className="grid grid-cols-1 gap-3 md:grid-cols-3">
           <label className="text-xs font-medium text-slate-600 dark:text-slate-300">
-            Amount
+            {amountLabel}
             <input
               value={currencyState.amount}
               onChange={(event) => onCurrencyAmountChange(event.target.value)}
@@ -148,7 +187,7 @@ export function ConvertersPanel({
           </label>
 
           <label className="text-xs font-medium text-slate-600 dark:text-slate-300">
-            Base
+            {baseLabel}
             <select
               value={currencyState.base}
               onChange={(event) => void onCurrencyBaseChange(event.target.value)}
@@ -163,7 +202,7 @@ export function ConvertersPanel({
           </label>
 
           <label className="text-xs font-medium text-slate-600 dark:text-slate-300">
-            Quote
+            {quoteLabel}
             <select
               value={currencyState.quote}
               onChange={(event) => onCurrencyQuoteChange(event.target.value)}
@@ -180,22 +219,22 @@ export function ConvertersPanel({
 
         <div className="rounded-2xl bg-gradient-to-r from-emerald-50/70 to-cyan-50/70 p-4 dark:from-emerald-900/20 dark:to-cyan-900/20">
           <p className="text-xs uppercase tracking-[0.14em] text-slate-500 dark:text-slate-400">
-            Converted amount
+            {convertedAmountLabel}
           </p>
           <p className="font-display text-3xl text-slate-950 dark:text-white">
             {currencyState.outputValue || '0'}
           </p>
           <p className="mt-2 text-[11px] text-slate-500 dark:text-slate-400">
-            Provider: {currencyState.providerName}
+            {providerLabel}: {currencyState.providerName}
             {currencyState.lastUpdatedAt
               ? ` | ${new Date(currencyState.lastUpdatedAt).toLocaleString(language)}`
               : ''}
           </p>
           <p className="text-[11px] text-slate-500 dark:text-slate-400">
-            Auto-updates every 5 minutes while app is open.
+            {autoRefreshLabel}
           </p>
           <p className="h-4 text-xs text-rose-500 dark:text-rose-300">
-            {currencyState.error ?? (currencyState.isLoading ? 'Refreshing rates...' : ' ')}
+            {currencyState.error ?? (currencyState.isLoading ? refreshingLabel : ' ')}
           </p>
         </div>
       </section>
@@ -204,7 +243,7 @@ export function ConvertersPanel({
 
   return (
     <section className="rounded-3xl border border-slate-300/70 bg-white/70 p-4 text-sm text-slate-600 shadow-soft backdrop-blur-xl dark:border-slate-700 dark:bg-slate-900/60 dark:text-slate-300">
-      Pick <strong>Units</strong> or <strong>Currency</strong> mode to open converter workspace.
+      {pickModeLabel}
     </section>
   )
 }

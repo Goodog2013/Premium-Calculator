@@ -1,9 +1,12 @@
 ﻿import { AnimatePresence, motion } from 'framer-motion'
 import { Delete, Equal } from 'lucide-react'
+import type { AppLanguageCode } from '../../i18n/languages'
+import { pickUiText } from '../../i18n/uiText'
 import { AngleMode, CalculatorMode, ProgrammerBase } from '../../types/calculator'
 import { cn } from '../../utils/cn'
 
 interface KeypadProps {
+  language: AppLanguageCode
   mode: CalculatorMode
   angleMode: AngleMode
   programmerBase: ProgrammerBase
@@ -43,12 +46,12 @@ const standardKeys: KeyDefinition[] = [
   { key: '7', label: '7', token: '7' },
   { key: '8', label: '8', token: '8' },
   { key: '9', label: '9', token: '9' },
-  { key: 'divide', label: '?', token: '?', variant: 'operator' },
+  { key: 'divide', label: '/', token: '/', variant: 'operator' },
 
   { key: '4', label: '4', token: '4' },
   { key: '5', label: '5', token: '5' },
   { key: '6', label: '6', token: '6' },
-  { key: 'multiply', label: '?', token: '?', variant: 'operator' },
+  { key: 'multiply', label: '*', token: '*', variant: 'operator' },
 
   { key: '1', label: '1', token: '1' },
   { key: '2', label: '2', token: '2' },
@@ -72,12 +75,12 @@ const scientificExtras: KeyDefinition[] = [
   { key: 'sin', label: 'sin', token: 'sin(' },
   { key: 'cos', label: 'cos', token: 'cos(' },
   { key: 'tan', label: 'tan', token: 'tan(' },
-  { key: 'sqrt', label: 'v', token: 'sqrt(' },
-  { key: 'pow', label: 'x?', token: '^', variant: 'operator' },
+  { key: 'sqrt', label: 'sqrt', token: 'sqrt(' },
+  { key: 'pow', label: 'x^y', token: '^', variant: 'operator' },
   { key: 'log', label: 'log', token: 'log(' },
   { key: 'ln', label: 'ln', token: 'ln(' },
   { key: 'exp', label: 'exp', token: 'exp(' },
-  { key: 'pi', label: '?', token: 'pi' },
+  { key: 'pi', label: 'pi', token: 'pi' },
   { key: 'e', label: 'e', token: 'e' },
   { key: 'abs', label: '|x|', token: 'abs(' },
   { key: 'clear', label: 'AC', action: 'clear', variant: 'operator' },
@@ -102,12 +105,12 @@ const programmerKeys: KeyDefinition[] = [
   { key: '7', label: '7', token: '7' },
   { key: '8', label: '8', token: '8' },
   { key: '9', label: '9', token: '9' },
-  { key: 'div', label: '?', token: '?', variant: 'operator' },
+  { key: 'div', label: '/', token: '/', variant: 'operator' },
 
   { key: '4', label: '4', token: '4' },
   { key: '5', label: '5', token: '5' },
   { key: '6', label: '6', token: '6' },
-  { key: 'mul', label: '?', token: '?', variant: 'operator' },
+  { key: 'mul', label: '*', token: '*', variant: 'operator' },
 
   { key: '1', label: '1', token: '1' },
   { key: '2', label: '2', token: '2' },
@@ -151,6 +154,7 @@ function keyButtonClass(variant: KeyDefinition['variant'] = 'default'): string {
 }
 
 export function Keypad({
+  language,
   mode,
   angleMode,
   programmerBase,
@@ -166,6 +170,7 @@ export function Keypad({
   onMemorySubtract,
   onMemoryStore,
 }: KeypadProps) {
+  const evaluateLabel = pickUiText(language, 'Evaluate', 'Равно')
   const fullMode = mode === 'graph' || mode === 'symbolic' ? 'scientific' : mode
 
   const keys = fullMode === 'programmer' ? programmerKeys : standardKeys
@@ -312,7 +317,7 @@ export function Keypad({
                   <Delete className="mx-auto h-4 w-4" />
                 ) : key.action === 'evaluate' ? (
                   <span className="inline-flex items-center justify-center gap-2">
-                    Evaluate <Equal className="h-3.5 w-3.5" />
+                    {evaluateLabel} <Equal className="h-3.5 w-3.5" />
                   </span>
                 ) : (
                   key.label
@@ -325,6 +330,3 @@ export function Keypad({
     </section>
   )
 }
-
-
-

@@ -8,60 +8,79 @@
   Sigma,
 } from 'lucide-react'
 import { motion } from 'framer-motion'
+import type { AppLanguageCode } from '../../i18n/languages'
+import { pickUiText } from '../../i18n/uiText'
 import { CalculatorMode } from '../../types/calculator'
 import { cn } from '../../utils/cn'
 
 const modeItems: Array<{
   id: CalculatorMode
-  label: string
-  description: string
+  labelEn: string
+  labelRu: string
+  descriptionEn: string
+  descriptionRu: string
   icon: typeof Calculator
 }> = [
   {
     id: 'standard',
-    label: 'Standard',
-    description: 'Fast everyday calculations',
+    labelEn: 'Standard',
+    labelRu: 'Стандарт',
+    descriptionEn: 'Fast everyday calculations',
+    descriptionRu: 'Быстрые повседневные вычисления',
     icon: Calculator,
   },
   {
     id: 'scientific',
-    label: 'Scientific',
-    description: 'Trig, logs, powers',
+    labelEn: 'Scientific',
+    labelRu: 'Научный',
+    descriptionEn: 'Trig, logs, powers',
+    descriptionRu: 'Тригонометрия, логи, степени',
     icon: Sigma,
   },
   {
     id: 'symbolic',
-    label: 'Symbolic',
-    description: 'Equations, factorization, simplify',
+    labelEn: 'Symbolic',
+    labelRu: 'Символьный',
+    descriptionEn: 'Equations, factorization, simplify',
+    descriptionRu: 'Уравнения, факторизация, упрощение',
     icon: FunctionSquare,
   },
   {
     id: 'programmer',
-    label: 'Programmer',
-    description: 'Bitwise and base math',
+    labelEn: 'Programmer',
+    labelRu: 'Программист',
+    descriptionEn: 'Bitwise and base math',
+    descriptionRu: 'Битовые операции и системы счисления',
     icon: Binary,
   },
   {
     id: 'unit',
-    label: 'Units',
-    description: 'Length, mass, data and more',
+    labelEn: 'Units',
+    labelRu: 'Единицы',
+    descriptionEn: 'Length, mass, data and more',
+    descriptionRu: 'Длина, масса, данные и другое',
     icon: ArrowLeftRight,
   },
   {
     id: 'currency',
-    label: 'Currency',
-    description: 'Provider-backed FX conversion',
+    labelEn: 'Currency',
+    labelRu: 'Валюты',
+    descriptionEn: 'Provider-backed FX conversion',
+    descriptionRu: 'Конвертация валют через провайдеры',
     icon: DollarSign,
   },
   {
     id: 'graph',
-    label: 'Graph',
-    description: 'Real-time function visualizer',
+    labelEn: 'Graph',
+    labelRu: 'График',
+    descriptionEn: 'Real-time function visualizer',
+    descriptionRu: 'Визуализация функций в реальном времени',
     icon: ChartSpline,
   },
 ]
 
 interface ModeSelectorProps {
+  language: AppLanguageCode
   mode: CalculatorMode
   isCollapsed: boolean
   onModeChange: (mode: CalculatorMode) => void
@@ -69,23 +88,28 @@ interface ModeSelectorProps {
 }
 
 export function ModeSelector({
+  language,
   mode,
   isCollapsed,
   onModeChange,
   onToggleCollapsed,
 }: ModeSelectorProps) {
+  const workspaceLabel = pickUiText(language, 'Workspace', 'Рабочее пространство')
+  const compactLabel = pickUiText(language, 'Compact view', 'Свернуть модули')
+  const expandLabel = pickUiText(language, 'Expand modules', 'Развернуть модули')
+
   return (
     <section className="space-y-3">
       <div className="flex items-center justify-between">
         <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-slate-500 dark:text-slate-400">
-          Workspace
+          {workspaceLabel}
         </p>
         <button
           type="button"
           onClick={onToggleCollapsed}
           className="rounded-full border border-slate-300/70 px-3 py-1 text-xs font-medium text-slate-600 transition hover:border-cyan-400/70 hover:text-slate-900 dark:border-slate-700 dark:text-slate-300 dark:hover:border-cyan-400/70 dark:hover:text-white"
         >
-          {isCollapsed ? 'Expand modules' : 'Compact view'}
+          {isCollapsed ? expandLabel : compactLabel}
         </button>
       </div>
 
@@ -99,6 +123,13 @@ export function ModeSelector({
         {modeItems.map((item) => {
           const Icon = item.icon
           const active = item.id === mode
+
+          const label = pickUiText(language, item.labelEn, item.labelRu)
+          const description = pickUiText(
+            language,
+            item.descriptionEn,
+            item.descriptionRu,
+          )
 
           return (
             <motion.button
@@ -119,12 +150,12 @@ export function ModeSelector({
               <div className="mb-2 flex items-center gap-2">
                 <Icon className="h-4 w-4 text-cyan-600 dark:text-cyan-300" />
                 <span className="text-sm font-semibold text-slate-900 dark:text-slate-100">
-                  {item.label}
+                  {label}
                 </span>
               </div>
               {!isCollapsed && (
                 <p className="text-xs text-slate-600 dark:text-slate-400">
-                  {item.description}
+                  {description}
                 </p>
               )}
             </motion.button>
@@ -134,4 +165,3 @@ export function ModeSelector({
     </section>
   )
 }
-

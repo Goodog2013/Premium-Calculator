@@ -1,5 +1,6 @@
 import { Clock3, Trash2 } from 'lucide-react'
 import type { AppLanguageCode } from '../../i18n/languages'
+import { pickUiText } from '../../i18n/uiText'
 import { HistoryEntry } from '../../types/calculator'
 
 interface HistoryPanelProps {
@@ -15,18 +16,26 @@ export function HistoryPanel({
   onUse,
   onClear,
 }: HistoryPanelProps) {
+  const titleLabel = pickUiText(language, 'History', 'История')
+  const clearLabel = pickUiText(language, 'Clear', 'Очистить')
+  const emptyLabel = pickUiText(
+    language,
+    'Your calculations will appear here.',
+    'Здесь появятся ваши вычисления.',
+  )
+
   return (
     <section className="space-y-3">
       <div className="flex items-center justify-between">
         <h3 className="text-sm font-semibold uppercase tracking-[0.12em] text-slate-600 dark:text-slate-300">
-          History
+          {titleLabel}
         </h3>
         <button
           type="button"
           onClick={onClear}
           className="inline-flex items-center gap-1 rounded-lg border border-slate-300/70 px-2 py-1 text-xs text-slate-600 transition hover:border-rose-300 hover:text-rose-500 dark:border-slate-700 dark:text-slate-400 dark:hover:border-rose-400/60 dark:hover:text-rose-300"
         >
-          <Trash2 className="h-3.5 w-3.5" /> Clear
+          <Trash2 className="h-3.5 w-3.5" /> {clearLabel}
         </button>
       </div>
 
@@ -34,7 +43,7 @@ export function HistoryPanel({
         {history.length === 0 && (
           <div className="rounded-2xl border border-dashed border-slate-300/70 p-4 text-center text-xs text-slate-500 dark:border-slate-700 dark:text-slate-400">
             <Clock3 className="mx-auto mb-2 h-4 w-4" />
-            Your calculations will appear here.
+            {emptyLabel}
           </div>
         )}
 
