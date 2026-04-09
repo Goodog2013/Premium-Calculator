@@ -1,4 +1,4 @@
-import { LocateFixed, Sparkles } from 'lucide-react'
+﻿import { LocateFixed, Sparkles } from 'lucide-react'
 import { useState } from 'react'
 import {
   defaultLanguage,
@@ -144,8 +144,10 @@ export function SettingsPanel({
           <Sparkles className="h-3.5 w-3.5" /> Keyboard shortcuts
         </p>
         <p>Enter = evaluate, Esc = clear, Backspace = delete.</p>
-        <p>F1/F2/F3/F4 switch standard/scientific/programmer/graph modes.</p>
+        <p>F1/F2/F3/F4/F5 switch standard/scientific/programmer/graph/symbolic modes.</p>
       </div>
     </section>
   )
 }
+
+

@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+﻿import { useEffect, useMemo, useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import { History, Settings, Star } from 'lucide-react'
 import { ExpressionDisplay } from '../components/calculator/ExpressionDisplay'
@@ -10,17 +10,22 @@ import { ConvertersPanel } from '../components/panels/ConvertersPanel'
 import { FavoritesPanel } from '../components/panels/FavoritesPanel'
 import { GraphPanel } from '../components/panels/GraphPanel'
 import { HistoryPanel } from '../components/panels/HistoryPanel'
+import { PluginConvertersPanel } from '../components/panels/PluginConvertersPanel'
 import { SettingsPanel } from '../components/panels/SettingsPanel'
+import { SymbolicPanel } from '../components/panels/SymbolicPanel'
 import { copyToClipboard } from '../desktop/bindings'
 import { useCurrencyAutoRefresh } from '../hooks/useCurrencyAutoRefresh'
 import { useKeyboardInput } from '../hooks/useKeyboardInput'
 import { useLanguageSync } from '../hooks/useLanguageSync'
 import { useThemeSync } from '../hooks/useThemeSync'
 import { detectLanguageByIp } from '../providers/language/ipLanguageService'
+import { listAllConverterPlugins } from '../providers/converterPlugins/pluginService'
 import {
   supportedCurrencies,
   useCalculatorStore,
 } from '../state/calculatorStore'
+import { useConverterPluginStore } from '../state/converterPluginStore'
+import { useSymbolicStore } from '../state/symbolicStore'
 import { SidePanelTab } from '../types/calculator'
 import { cn } from '../utils/cn'
 
@@ -104,6 +109,47 @@ export function CalculatorApp() {
   const applyFavorite = useCalculatorStore((state) => state.applyFavorite)
   const removeFavorite = useCalculatorStore((state) => state.removeFavorite)
 
+  const solveExpression = useSymbolicStore((state) => state.solveExpression)
+  const solveVariable = useSymbolicStore((state) => state.solveVariable)
+  const solveResult = useSymbolicStore((state) => state.solveResult)
+  const factorExpression = useSymbolicStore((state) => state.factorExpression)
+  const factorResult = useSymbolicStore((state) => state.factorResult)
+  const simplifyExpression = useSymbolicStore((state) => state.simplifyExpression)
+  const simplifyResult = useSymbolicStore((state) => state.simplifyResult)
+  const symbolicError = useSymbolicStore((state) => state.error)
+
+  const setSolveExpression = useSymbolicStore((state) => state.setSolveExpression)
+  const setSolveVariable = useSymbolicStore((state) => state.setSolveVariable)
+  const solve = useSymbolicStore((state) => state.solve)
+  const setFactorExpression = useSymbolicStore(
+    (state) => state.setFactorExpression,
+  )
+  const factorize = useSymbolicStore((state) => state.factorize)
+  const setSimplifyExpression = useSymbolicStore(
+    (state) => state.setSimplifyExpression,
+  )
+  const simplify = useSymbolicStore((state) => state.simplify)
+
+  const userPlugins = useConverterPluginStore((state) => state.userPlugins)
+  const pluginConverter = useConverterPluginStore((state) => state.pluginConverter)
+  const pluginDraft = useConverterPluginStore((state) => state.pluginDraft)
+  const pluginManagerError = useConverterPluginStore(
+    (state) => state.pluginManagerError,
+  )
+  const setPluginId = useConverterPluginStore((state) => state.setPluginId)
+  const setPluginFromUnit = useConverterPluginStore((state) => state.setFromUnit)
+  const setPluginToUnit = useConverterPluginStore((state) => state.setToUnit)
+  const setPluginInputValue = useConverterPluginStore(
+    (state) => state.setInputValue,
+  )
+  const setPluginDraft = useConverterPluginStore((state) => state.setPluginDraft)
+  const addPluginFromDraft = useConverterPluginStore(
+    (state) => state.addPluginFromDraft,
+  )
+  const removeUserPlugin = useConverterPluginStore(
+    (state) => state.removeUserPlugin,
+  )
+
   useEffect(() => {
     void refreshCurrencyRates({ force: true })
     rebuildGraph()
@@ -113,6 +159,7 @@ export function CalculatorApp() {
     const map = {
       standard: 'Standard mode',
       scientific: 'Scientific mode',
+      symbolic: 'Symbolic mode',
       programmer: 'Programmer mode',
       unit: 'Unit converter',
       currency: 'Currency converter',
@@ -140,6 +187,16 @@ export function CalculatorApp() {
     return detected
   }
 
+  const availablePlugins = useMemo(
+    () => listAllConverterPlugins(userPlugins),
+    [userPlugins],
+  )
+
+  const userPluginIds = useMemo(
+    () => userPlugins.map((plugin) => plugin.id),
+    [userPlugins],
+  )
+
   return (
     <div className="relative min-h-screen bg-app-gradient px-4 py-6 text-slate-900 transition-colors dark:text-slate-100 md:px-6 lg:px-8">
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(34,211,238,0.18),transparent_30%),radial-gradient(circle_at_bottom_right,rgba(16,185,129,0.13),transparent_36%)] dark:bg-[radial-gradient(circle_at_top_left,rgba(8,145,178,0.24),transparent_34%),radial-gradient(circle_at_bottom_right,rgba(5,150,105,0.16),transparent_40%)]" />
@@ -164,8 +221,8 @@ export function CalculatorApp() {
                 Premium Desktop Calculator
               </h1>
               <p className="mt-2 max-w-2xl text-sm text-slate-600 dark:text-slate-300">
-                Crafted for speed and precision: scientific math, programmer tools,
-                conversion workspace, and a real-time graph lab in one focused
+                Crafted for speed and precision: scientific math, symbolic algebra,
+                plugin converters, and a real-time graph lab in one focused
                 interface.
               </p>
             </div>
@@ -195,7 +252,9 @@ export function CalculatorApp() {
         <div
           className={cn(
             'grid gap-4',
-            isAdvancedCollapsed ? 'grid-cols-1 xl:grid-cols-[1.5fr_0.8fr]' : 'grid-cols-1 xl:grid-cols-[1.9fr_1fr]',
+            isAdvancedCollapsed
+              ? 'grid-cols-1 xl:grid-cols-[1.5fr_0.8fr]'
+              : 'grid-cols-1 xl:grid-cols-[1.9fr_1fr]',
           )}
         >
           <div className="space-y-4">
@@ -212,50 +271,104 @@ export function CalculatorApp() {
             />
 
             {!isAdvancedCollapsed && (
-              <AnimatePresence mode="wait">
-                {mode === 'graph' && (
-                  <motion.div
-                    key="graph"
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -8 }}
-                    transition={{ duration: 0.2 }}
-                  >
-                    <GraphPanel
-                      graph={graph}
-                      onExpressionChange={setGraphExpression}
-                      onWindowChange={setGraphWindow}
-                      onRebuild={rebuildGraph}
-                    />
-                  </motion.div>
-                )}
+              <>
+                <AnimatePresence mode="wait">
+                  {mode === 'graph' && (
+                    <motion.div
+                      key="graph"
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -8 }}
+                      transition={{ duration: 0.2 }}
+                    >
+                      <GraphPanel
+                        graph={graph}
+                        onExpressionChange={setGraphExpression}
+                        onWindowChange={setGraphWindow}
+                        onRebuild={rebuildGraph}
+                      />
+                    </motion.div>
+                  )}
 
-                {(mode === 'unit' || mode === 'currency' || mode === 'standard') && (
+                  {mode === 'symbolic' && (
+                    <motion.div
+                      key="symbolic"
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -8 }}
+                      transition={{ duration: 0.2 }}
+                    >
+                      <SymbolicPanel
+                        solveExpression={solveExpression}
+                        solveVariable={solveVariable}
+                        solveResult={solveResult}
+                        factorExpression={factorExpression}
+                        factorResult={factorResult}
+                        simplifyExpression={simplifyExpression}
+                        simplifyResult={simplifyResult}
+                        error={symbolicError}
+                        onSolveExpressionChange={setSolveExpression}
+                        onSolveVariableChange={setSolveVariable}
+                        onSolve={solve}
+                        onFactorExpressionChange={setFactorExpression}
+                        onFactorize={factorize}
+                        onSimplifyExpressionChange={setSimplifyExpression}
+                        onSimplify={simplify}
+                      />
+                    </motion.div>
+                  )}
+
+                  {(mode === 'unit' || mode === 'currency' || mode === 'standard') && (
+                    <motion.div
+                      key="converter"
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -8 }}
+                      transition={{ duration: 0.2 }}
+                    >
+                      <ConvertersPanel
+                        mode={converterMode}
+                        language={language}
+                        unitState={unitConverter}
+                        currencyState={currencyConverter}
+                        supportedCurrencies={supportedCurrencies}
+                        onUnitCategoryChange={setUnitCategory}
+                        onUnitFromChange={setUnitFrom}
+                        onUnitToChange={setUnitTo}
+                        onUnitInputChange={setUnitInput}
+                        onCurrencyBaseChange={setCurrencyBase}
+                        onCurrencyQuoteChange={setCurrencyQuote}
+                        onCurrencyAmountChange={setCurrencyAmount}
+                        onCurrencyRefresh={() => refreshCurrencyRates({ force: true })}
+                      />
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+
+                {(mode === 'unit' || mode === 'standard') && (
                   <motion.div
-                    key="converter"
+                    key="plugin-converters"
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -8 }}
                     transition={{ duration: 0.2 }}
                   >
-                    <ConvertersPanel
-                      mode={converterMode}
-                      language={language}
-                      unitState={unitConverter}
-                      currencyState={currencyConverter}
-                      supportedCurrencies={supportedCurrencies}
-                      onUnitCategoryChange={setUnitCategory}
-                      onUnitFromChange={setUnitFrom}
-                      onUnitToChange={setUnitTo}
-                      onUnitInputChange={setUnitInput}
-                      onCurrencyBaseChange={setCurrencyBase}
-                      onCurrencyQuoteChange={setCurrencyQuote}
-                      onCurrencyAmountChange={setCurrencyAmount}
-                      onCurrencyRefresh={() => refreshCurrencyRates({ force: true })}
+                    <PluginConvertersPanel
+                      plugins={availablePlugins}
+                      userPluginIds={userPluginIds}
+                      pluginState={pluginConverter}
+                      pluginDraft={pluginDraft}
+                      pluginManagerError={pluginManagerError}
+                      onPluginChange={setPluginId}
+                      onFromUnitChange={setPluginFromUnit}
+                      onToUnitChange={setPluginToUnit}
+                      onInputChange={setPluginInputValue}
+                      onPluginDraftChange={setPluginDraft}
+                      onAddPlugin={addPluginFromDraft}
+                      onRemovePlugin={removeUserPlugin}
                     />
                   </motion.div>
                 )}
-              </AnimatePresence>
+              </>
             )}
 
             <Keypad

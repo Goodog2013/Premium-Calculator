@@ -4,6 +4,7 @@
   Calculator,
   ChartSpline,
   DollarSign,
+  FunctionSquare,
   Sigma,
 } from 'lucide-react'
 import { motion } from 'framer-motion'
@@ -27,6 +28,12 @@ const modeItems: Array<{
     label: 'Scientific',
     description: 'Trig, logs, powers',
     icon: Sigma,
+  },
+  {
+    id: 'symbolic',
+    label: 'Symbolic',
+    description: 'Equations, factorization, simplify',
+    icon: FunctionSquare,
   },
   {
     id: 'programmer',
@@ -86,7 +93,7 @@ export function ModeSelector({
         layout
         className={cn(
           'grid gap-2',
-          isCollapsed ? 'grid-cols-3 md:grid-cols-6' : 'grid-cols-2 md:grid-cols-3',
+          isCollapsed ? 'grid-cols-3 md:grid-cols-7' : 'grid-cols-2 md:grid-cols-4',
         )}
       >
         {modeItems.map((item) => {

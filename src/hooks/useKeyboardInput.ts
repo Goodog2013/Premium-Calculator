@@ -71,6 +71,12 @@ export function useKeyboardInput(): void {
         return
       }
 
+      if (key === 'F5') {
+        event.preventDefault()
+        setMode('symbolic')
+        return
+      }
+
       const isNumeric = /^\d$/.test(key)
       if (isNumeric) {
         event.preventDefault()
@@ -84,7 +90,7 @@ export function useKeyboardInput(): void {
         return
       }
 
-      if (mode === 'scientific' || mode === 'graph') {
+      if (mode === 'scientific' || mode === 'graph' || mode === 'symbolic') {
         if (key.toLowerCase() === 'p') {
           event.preventDefault()
           appendToken('pi')
@@ -122,3 +128,5 @@ export function useKeyboardInput(): void {
     return () => window.removeEventListener('keydown', handler)
   }, [appendToken, backspace, clearExpression, evaluate, mode, setMode])
 }
+
+

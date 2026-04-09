@@ -5,6 +5,7 @@
   | 'unit'
   | 'currency'
   | 'graph'
+  | 'symbolic'
 
 export type AngleMode = 'deg' | 'rad'
 export type ThemeMode = 'light' | 'dark' | 'system'
@@ -56,6 +57,43 @@ export interface GraphState {
   xMin: number
   xMax: number
   points: GraphPoint[]
+  error: string | null
+}
+
+export interface SymbolicState {
+  solveExpression: string
+  solveVariable: string
+  solveResult: string
+  factorExpression: string
+  factorResult: string
+  simplifyExpression: string
+  simplifyResult: string
+  error: string | null
+}
+
+export interface ConverterPluginUnitDefinition {
+  key: string
+  label: string
+  symbol: string
+  toBaseFormula: string
+  fromBaseFormula: string
+}
+
+export interface ConverterPluginDefinition {
+  id: string
+  name: string
+  description: string
+  category: string
+  baseUnitKey: string
+  units: ConverterPluginUnitDefinition[]
+}
+
+export interface PluginConverterState {
+  pluginId: string
+  fromUnit: string
+  toUnit: string
+  inputValue: string
+  outputValue: string
   error: string | null
 }
 

@@ -43,12 +43,12 @@ const standardKeys: KeyDefinition[] = [
   { key: '7', label: '7', token: '7' },
   { key: '8', label: '8', token: '8' },
   { key: '9', label: '9', token: '9' },
-  { key: 'divide', label: '÷', token: '÷', variant: 'operator' },
+  { key: 'divide', label: '?', token: '?', variant: 'operator' },
 
   { key: '4', label: '4', token: '4' },
   { key: '5', label: '5', token: '5' },
   { key: '6', label: '6', token: '6' },
-  { key: 'multiply', label: '×', token: '×', variant: 'operator' },
+  { key: 'multiply', label: '?', token: '?', variant: 'operator' },
 
   { key: '1', label: '1', token: '1' },
   { key: '2', label: '2', token: '2' },
@@ -72,12 +72,12 @@ const scientificExtras: KeyDefinition[] = [
   { key: 'sin', label: 'sin', token: 'sin(' },
   { key: 'cos', label: 'cos', token: 'cos(' },
   { key: 'tan', label: 'tan', token: 'tan(' },
-  { key: 'sqrt', label: '√', token: 'sqrt(' },
-  { key: 'pow', label: 'xʸ', token: '^', variant: 'operator' },
+  { key: 'sqrt', label: 'v', token: 'sqrt(' },
+  { key: 'pow', label: 'x?', token: '^', variant: 'operator' },
   { key: 'log', label: 'log', token: 'log(' },
   { key: 'ln', label: 'ln', token: 'ln(' },
   { key: 'exp', label: 'exp', token: 'exp(' },
-  { key: 'pi', label: 'π', token: 'pi' },
+  { key: 'pi', label: '?', token: 'pi' },
   { key: 'e', label: 'e', token: 'e' },
   { key: 'abs', label: '|x|', token: 'abs(' },
   { key: 'clear', label: 'AC', action: 'clear', variant: 'operator' },
@@ -102,12 +102,12 @@ const programmerKeys: KeyDefinition[] = [
   { key: '7', label: '7', token: '7' },
   { key: '8', label: '8', token: '8' },
   { key: '9', label: '9', token: '9' },
-  { key: 'div', label: '÷', token: '÷', variant: 'operator' },
+  { key: 'div', label: '?', token: '?', variant: 'operator' },
 
   { key: '4', label: '4', token: '4' },
   { key: '5', label: '5', token: '5' },
   { key: '6', label: '6', token: '6' },
-  { key: 'mul', label: '×', token: '×', variant: 'operator' },
+  { key: 'mul', label: '?', token: '?', variant: 'operator' },
 
   { key: '1', label: '1', token: '1' },
   { key: '2', label: '2', token: '2' },
@@ -166,7 +166,7 @@ export function Keypad({
   onMemorySubtract,
   onMemoryStore,
 }: KeypadProps) {
-  const fullMode = mode === 'graph' ? 'scientific' : mode
+  const fullMode = mode === 'graph' || mode === 'symbolic' ? 'scientific' : mode
 
   const keys = fullMode === 'programmer' ? programmerKeys : standardKeys
   const topKeys = fullMode === 'scientific' ? scientificExtras : []
@@ -325,4 +325,6 @@ export function Keypad({
     </section>
   )
 }
+
+
 
