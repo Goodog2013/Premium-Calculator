@@ -68,7 +68,7 @@ try {
 }
 
 await rm(releasesDir, { recursive: true, force: true })
-await rm(portableReleasesDir, { recursive: true, force: true })
+await rm(portableStageDir, { recursive: true, force: true })
 await mkdir(releasesDir, { recursive: true })
 await mkdir(portableStageDir, { recursive: true })
 
@@ -77,6 +77,8 @@ const installerOutputPath = resolve(releasesDir, installerFileName)
 const portableExePath = resolve(portableStageDir, `${productName}.exe`)
 const portableLicensePath = resolve(portableStageDir, 'LICENSE.txt')
 const portableZipPath = resolve(portableReleasesDir, `${productName}_${version}_portable.zip`)
+
+await rm(portableZipPath, { force: true })
 
 await copyFile(publishedInstallerExe, installerOutputPath)
 await copyFile(desktopExePath, portableExePath)
