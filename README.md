@@ -1,183 +1,253 @@
-# GreatCalc
+# GreatCalc ✨
 
-GreatCalc is a premium-grade desktop calculator for Windows built with `Tauri + React + TypeScript + Vite + Tailwind`.
+Premium desktop calculator for Windows built with `Tauri + React + TypeScript + Vite + Tailwind`.
 
-It combines high-end visual polish with reliable daily usability:
-- standard calculations
-- scientific tools
-- programmer workspace
-- unit and currency conversion
-- graphing in real time
-- persistent history, favorites, memory, and preferences
+[🇬🇧 English](#english) | [🇷🇺 Русский](#русский)
 
-## Stack
+---
 
+## English
+
+### 🚀 Overview
+GreatCalc is not a basic calculator clone. It is a polished premium-tech app focused on:
+- fast daily workflows
+- advanced engineering features
+- smooth visual interactions
+- reliable behavior and strong architecture
+
+### 🧩 Core Features
+- Standard mode
+- Scientific mode
+- Programmer mode (bitwise + BIN/OCT/DEC/HEX)
+- Unit converter
+- Currency converter with real exchange rates
+- Graph mode with real-time plotting
+- History, favorites, memory
+- Keyboard support and shortcuts
+- Light / dark / system themes
+- Language setting (50 most-used world languages)
+- Persistent state between sessions
+
+### 💱 Currency Rates
+- Live providers:
+  - Open ER API
+  - Frankfurter API
+- Offline fallback provider when network is unavailable
+- Automatic background refresh every 5 minutes
+- Refresh on app focus/network return
+
+### 🛠 Tech Stack
 - Frontend: React 19, TypeScript, Vite, TailwindCSS, Zustand
-- Motion/UI polish: Framer Motion, Lucide icons
+- Motion/UI: Framer Motion, Lucide
 - Graphs: Recharts
 - Math engine: Math.js (safe parser flow, no `eval`)
 - Desktop shell: Tauri 2
-- Testing: Vitest + React Testing Library
+- Tests: Vitest + React Testing Library
 
-## Installation
-
-1. Install Node.js 20+ (24+ recommended).
-2. Install Rust toolchain (required for Tauri desktop build):
-   - https://www.rust-lang.org/tools/install
-3. Install Microsoft Visual Studio C++ Build Tools + WebView2 runtime (for Tauri on Windows).
+### 📦 Installation
+1. Install Node.js 20+ (24+ recommended)
+2. Install Rust toolchain: https://www.rust-lang.org/tools/install
+3. Install Visual Studio C++ Build Tools + WebView2 runtime (Windows)
 4. Install dependencies:
 
 ```bash
 npm install
 ```
 
-## Run (Web Dev)
+### ▶️ Run
+Web dev:
 
 ```bash
 npm run dev
 ```
 
-## Run (Desktop Tauri Dev)
+Desktop dev (Tauri):
 
 ```bash
 npm run tauri:dev
 ```
 
-## Build
-
-Web production build:
+### 🏗 Build
+Web:
 
 ```bash
 npm run build:web
 ```
 
-Desktop bundle build:
+Desktop bundle:
 
 ```bash
 npm run build:desktop
 ```
 
-Collect web artifacts into `Releases/web`:
-
-```bash
-npm run build:web:release
-```
-
-Collect web + desktop artifacts into `Releases/`:
+All release artifacts (`Releases/web` + `Releases/desktop`):
 
 ```bash
 npm run build:all
 ```
 
-## Tests
-
-Run test suite:
-
+### ✅ Tests & Quality
 ```bash
 npm run test
-```
-
-Coverage:
-
-```bash
-npm run test:coverage
-```
-
-Type check:
-
-```bash
 npm run typecheck
-```
-
-Lint:
-
-```bash
 npm run lint
 ```
 
-## Features
+Current local status:
+- `typecheck` ✅
+- `lint` ✅
+- `test` ✅ (27 tests)
 
-### Core calculator modes
-
-- Standard mode
-- Scientific mode
-- Programmer mode (bitwise ops + base switching: BIN/OCT/DEC/HEX)
-- Unit converter
-- Currency converter via provider abstraction
-- Real exchange rates with automatic background refresh (every 5 minutes)
-- Graph mode with real-time function plotting
-
-### Functional depth
-
-- Parentheses and robust expression handling
-- Percent support
-- Powers, roots, logs, trig
-- Constants `pi` and `e`
-- Degree/Radian switch
-- Memory actions (`MC`, `MR`, `M+`, `M-`, `MS`)
-- Keyboard support (input + mode shortcuts)
-- Language preference in Settings (50 most-used world languages)
-- Copy result
-- Friendly error handling
-- Persistence across sessions
-
-### Data and persistence
-
-- History of calculations
-- Favorites (saved formulas)
-- Persistent theme/mode/state via storage
-- Currency rates with provider fallback and cache
-- Live rates via Open ER API + Frankfurter API with offline fallback
-
-## Architecture (Layered)
-
-`src/` is split by responsibilities:
-
-- `components/` presentation layer (UI cards, keypad, panels)
-- `state/` app state and actions (Zustand)
-- `engine/` math parser/evaluator and graph sampling
-- `format/` number/programmer formatting
-- `converters/` unit conversion catalog and logic
+### 🧱 Architecture
+`src/` is split by responsibility:
+- `components/` presentation
+- `state/` state/actions (Zustand)
+- `engine/` math evaluation + graph points
+- `format/` number formatting/parsing
+- `converters/` unit conversion logic/catalog
 - `providers/` data providers (currency abstraction)
-- `persistence/` storage keys and state persistence boundaries
-- `desktop/` desktop-bound helper bindings (clipboard, env detection)
-- `hooks/` keyboard + theme synchronization
+- `persistence/` storage keys/boundaries
+- `desktop/` desktop bindings
+- `hooks/` app behavior hooks (theme, keyboard, auto-refresh, etc.)
+- `i18n/` language catalog/config
 
-Key design principles:
-- no `eval`
-- strong typing
-- separated domains for extensibility
-- state and engine decoupled from presentation
+### 🎨 UX / WOW Details
+- Glass/layered premium UI
+- Smooth mode transitions
+- Meaningful microinteractions
+- Real-time graph animation
+- Focused layout with collapsible advanced modules
 
-## Implemented WOW details
+### 🔮 Future Ideas
+1. Symbolic tools (equations, factorization)
+2. Plugin system for custom converters
+3. Encrypted profile export/import
+4. Optional arbitrary-precision mode
+5. Code-splitting for smaller bundle size
 
-- Layered glass cards with restrained ambient gradients
-- Purposeful microinteractions on controls
-- Animated transitions between mode modules
-- Real-time graph rendering with smooth chart animation
-- Premium composition, spacing, depth, and typography
-- Clean empty states and discoverable side panels
-- Compact mode toggle for focused daily use
+### 📄 License
+This project is licensed under the MIT License. See [LICENSE](./LICENSE).
 
-## Future improvements
+---
 
-1. Add symbolic math helpers (factorization, equation solving)
-2. Add plugin system for custom converter domains
-3. Implement local encrypted sync profile export/import
-4. Add optional high-precision decimal mode with arbitrary precision controls
-5. Optimize bundle size with mode-level code splitting
-6. Add snapshot visual regression tests for UI polish consistency
+## Русский
 
-## Project status
+### 🚀 О проекте
+GreatCalc — это не обычный калькулятор, а desktop-приложение с premium-интерфейсом для Windows:
+- быстрые повседневные вычисления
+- расширенные инженерные режимы
+- плавные и аккуратные анимации
+- надежная архитектура и стабильная работа
 
-Verified locally:
-- `npm run typecheck` ✅
-- `npm run lint` ✅
-- `npm run test` ✅ (19 tests)
-- `npm run build` ✅
+### 🧩 Основные возможности
+- Стандартный режим
+- Научный режим
+- Режим программиста (битовые операции + BIN/OCT/DEC/HEX)
+- Конвертер единиц
+- Конвертер валют с реальными курсами
+- Графический режим (функции в реальном времени)
+- История, избранное, память
+- Поддержка клавиатуры и горячих клавиш
+- Светлая / темная / системная темы
+- Настройка языка (50 самых популярных языков)
+- Сохранение состояния между сессиями
 
-Release folders:
-- `Releases/web` <- Vite production output
-- `Releases/desktop` <- Tauri bundle output (copied from `src-tauri/target/release/bundle`)
+### 💱 Курсы валют
+- Live-провайдеры:
+  - Open ER API
+  - Frankfurter API
+- Резервный офлайн-провайдер при отсутствии сети
+- Автообновление в фоне каждые 5 минут
+- Обновление при возврате в окно приложения и при восстановлении сети
 
-Note: this environment did not include Rust tooling initially, so only web-side validation was executed here. Tauri desktop commands are configured and ready once Rust is installed.
+### 🛠 Технологии
+- Frontend: React 19, TypeScript, Vite, TailwindCSS, Zustand
+- Анимации/UI: Framer Motion, Lucide
+- Графики: Recharts
+- Математическое ядро: Math.js (без `eval`)
+- Desktop-оболочка: Tauri 2
+- Тесты: Vitest + React Testing Library
+
+### 📦 Установка
+1. Установите Node.js 20+ (лучше 24+)
+2. Установите Rust toolchain: https://www.rust-lang.org/tools/install
+3. Установите Visual Studio C++ Build Tools + WebView2 runtime (Windows)
+4. Установите зависимости:
+
+```bash
+npm install
+```
+
+### ▶️ Запуск
+Web-режим разработки:
+
+```bash
+npm run dev
+```
+
+Desktop-режим разработки (Tauri):
+
+```bash
+npm run tauri:dev
+```
+
+### 🏗 Сборка
+Web-сборка:
+
+```bash
+npm run build:web
+```
+
+Desktop-сборка:
+
+```bash
+npm run build:desktop
+```
+
+Собрать и сложить артефакты в `Releases/web` и `Releases/desktop`:
+
+```bash
+npm run build:all
+```
+
+### ✅ Тесты и качество
+```bash
+npm run test
+npm run typecheck
+npm run lint
+```
+
+Текущий локальный статус:
+- `typecheck` ✅
+- `lint` ✅
+- `test` ✅ (27 тестов)
+
+### 🧱 Архитектура
+`src/` разделен по зонам ответственности:
+- `components/` — UI/presentation
+- `state/` — состояние и действия (Zustand)
+- `engine/` — вычислительное ядро и точки графика
+- `format/` — форматирование и парсинг чисел
+- `converters/` — конвертеры единиц
+- `providers/` — абстракции и провайдеры данных (валюты)
+- `persistence/` — ключи и границы persistence
+- `desktop/` — desktop bindings
+- `hooks/` — хуки поведения (тема, клавиатура, автообновление и т.д.)
+- `i18n/` — каталог языков и настройки
+
+### 🎨 UX / WOW-детали
+- Премиальный layered/glass стиль
+- Плавные переходы между режимами
+- Ненавязчивые микроинтеракции
+- Анимированный график в реальном времени
+- Возможность свернуть продвинутые модули для фокусного сценария
+
+### 🔮 Идеи на будущее
+1. Символьная математика (уравнения, факторизация)
+2. Плагинная система для кастомных конвертеров
+3. Экспорт/импорт профиля с шифрованием
+4. Режим повышенной точности (arbitrary precision)
+5. Code splitting для уменьшения размера бандла
+
+### 📄 Лицензия
+Проект распространяется по лицензии MIT. См. файл [LICENSE](./LICENSE).
