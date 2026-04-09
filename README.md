@@ -48,13 +48,25 @@ npm run tauri:dev
 Web production build:
 
 ```bash
-npm run build
+npm run build:web
 ```
 
 Desktop bundle build:
 
 ```bash
-npm run tauri:build
+npm run build:desktop
+```
+
+Collect web artifacts into `Releases/web`:
+
+```bash
+npm run build:web:release
+```
+
+Collect web + desktop artifacts into `Releases/`:
+
+```bash
+npm run build:all
 ```
 
 ## Tests
@@ -158,7 +170,11 @@ Key design principles:
 Verified locally:
 - `npm run typecheck` ✅
 - `npm run lint` ✅
-- `npm run test` ✅ (18 tests)
+- `npm run test` ✅ (19 tests)
 - `npm run build` ✅
+
+Release folders:
+- `Releases/web` <- Vite production output
+- `Releases/desktop` <- Tauri bundle output (copied from `src-tauri/target/release/bundle`)
 
 Note: this environment did not include Rust tooling initially, so only web-side validation was executed here. Tauri desktop commands are configured and ready once Rust is installed.

@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc -b && vite build",
+    "build": "npm run build:web",
     "lint": "eslint .",
     "preview": "vite preview",
     "typecheck": "tsc -b",
@@ -13,7 +13,13 @@
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
     "tauri:dev": "tauri dev",
-    "tauri:build": "tauri build"
+    "tauri:build": "tauri build",
+    "build:desktop": "npm run tauri:build",
+    "releases:collect": "node scripts/collect-releases.mjs",
+    "releases:clean": "node scripts/clean-releases.mjs",
+    "build:all": "npm run releases:clean && npm run build:web && npm run build:desktop && npm run releases:collect",
+    "build:web:release": "npm run releases:clean && npm run build:web && npm run releases:collect",
+    "build:web": "node scripts/clean-web-dist.mjs && tsc -b && vite build"
   },
   "dependencies": {
     "clsx": "^2.1.1",
