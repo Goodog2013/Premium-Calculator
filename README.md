@@ -94,6 +94,18 @@ Desktop installers (`.exe` + `.msi`):
 npm run build:desktop
 ```
 
+Custom installer from scratch (PowerShell-based, without Inno Setup):
+
+```bash
+npm run build:installer:custom
+```
+
+Build desktop binary and custom installer in one command:
+
+```bash
+npm run build:desktop:custom-installer
+```
+
 Collect release artifacts into `Releases/web` + `Releases/desktop`:
 
 ```bash
@@ -111,6 +123,19 @@ cmd /c 'call "C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Auxilia
 - `src-tauri/target/release/bundle/msi/GreatCalc_0.1.0_x64_en-US.msi`
 - `Releases/desktop/`
 - `Releases/web/`
+- `Releases/custom-installer/GreatCalc_0.1.0_custom-installer/`
+- `Releases/custom-installer/GreatCalc_0.1.0_custom-installer.zip`
+
+### 🧰 Custom Installer (No Inno)
+- Installer source code: `installer/custom/Install-GreatCalc.ps1`
+- Uninstaller source code: `installer/custom/Uninstall-GreatCalc.ps1`
+- Launcher: `installer/custom/Run-Installer.cmd`
+- Package builder: `scripts/build-custom-installer.mjs`
+- Installer behavior:
+- requests admin rights (UAC)
+- installs `greatcalc.exe` into `Program Files\GreatCalc`
+- creates Start Menu shortcut (+ optional desktop shortcut)
+- registers uninstall entry in Windows Apps & Features
 
 ### ✅ Tests & Quality
 ```bash
@@ -244,6 +269,18 @@ Desktop-инсталлеры (`.exe` + `.msi`):
 npm run build:desktop
 ```
 
+Кастомный установщик с нуля (PowerShell, без Inno Setup):
+
+```bash
+npm run build:installer:custom
+```
+
+Собрать desktop-бинарь и кастомный установщик одной командой:
+
+```bash
+npm run build:desktop:custom-installer
+```
+
 Сборка и копирование артефактов в `Releases/web` и `Releases/desktop`:
 
 ```bash
@@ -261,6 +298,19 @@ cmd /c 'call "C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Auxilia
 - `src-tauri/target/release/bundle/msi/GreatCalc_0.1.0_x64_en-US.msi`
 - `Releases/desktop/`
 - `Releases/web/`
+- `Releases/custom-installer/GreatCalc_0.1.0_custom-installer/`
+- `Releases/custom-installer/GreatCalc_0.1.0_custom-installer.zip`
+
+### 🧰 Кастомный установщик (Без Inno)
+- Исходник установщика: `installer/custom/Install-GreatCalc.ps1`
+- Исходник деинсталлятора: `installer/custom/Uninstall-GreatCalc.ps1`
+- Лаунчер: `installer/custom/Run-Installer.cmd`
+- Скрипт упаковки: `scripts/build-custom-installer.mjs`
+- Что делает установщик:
+- запрашивает права администратора (UAC)
+- устанавливает `greatcalc.exe` в `Program Files\GreatCalc`
+- создает ярлык в меню Пуск (и опционально на рабочем столе)
+- регистрирует удаление в Windows Apps & Features
 
 ### ✅ Тесты и качество
 ```bash

@@ -15,9 +15,11 @@
     "tauri:dev": "tauri dev",
     "tauri:build": "tauri build",
     "build:desktop": "npm run tauri:build",
+    "build:installer:custom": "node scripts/build-custom-installer.mjs",
+    "build:desktop:custom-installer": "npm run build:desktop && npm run build:installer:custom",
     "releases:collect": "node scripts/collect-releases.mjs",
     "releases:clean": "node scripts/clean-releases.mjs",
-    "build:all": "npm run releases:clean && npm run build:web && npm run build:desktop && npm run releases:collect",
+    "build:all": "npm run releases:clean && npm run build:web && npm run build:desktop && npm run releases:collect && npm run build:installer:custom",
     "build:web:release": "npm run releases:clean && npm run build:web && npm run releases:collect",
     "build:web": "node scripts/clean-web-dist.mjs && tsc -b && vite build"
   },
