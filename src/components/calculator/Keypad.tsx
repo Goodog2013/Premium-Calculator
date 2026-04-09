@@ -139,18 +139,18 @@ const baseOrder: ProgrammerBase[] = ['bin', 'oct', 'dec', 'hex']
 
 function keyButtonClass(variant: KeyDefinition['variant'] = 'default'): string {
   if (variant === 'operator') {
-    return 'border-slate-300/70 bg-slate-100/80 text-slate-900 hover:border-cyan-400/70 dark:border-slate-700 dark:bg-slate-800/70 dark:text-slate-100'
+    return 'border-slate-300/70 bg-slate-100/80 text-slate-900 accent-border-hover dark:border-slate-700 dark:bg-slate-800/70 dark:text-slate-100'
   }
 
   if (variant === 'accent') {
-    return 'border-cyan-400/60 bg-cyan-500/90 text-white hover:bg-cyan-500 dark:bg-cyan-500 dark:hover:bg-cyan-400'
+    return 'accent-solid'
   }
 
   if (variant === 'memory') {
-    return 'border-slate-300/60 bg-white/70 text-slate-700 hover:border-cyan-400/70 dark:border-slate-700 dark:bg-slate-900/70 dark:text-slate-300'
+    return 'border-slate-300/60 bg-white/70 text-slate-700 accent-border-hover dark:border-slate-700 dark:bg-slate-900/70 dark:text-slate-300'
   }
 
-  return 'border-slate-300/70 bg-white/80 text-slate-900 hover:border-cyan-400/70 dark:border-slate-700 dark:bg-slate-900/70 dark:text-slate-100'
+  return 'border-slate-300/70 bg-white/80 text-slate-900 accent-border-hover dark:border-slate-700 dark:bg-slate-900/70 dark:text-slate-100'
 }
 
 export function Keypad({
@@ -215,7 +215,7 @@ export function Keypad({
                 className={cn(
                   'rounded-lg px-3 py-1 text-xs font-semibold uppercase tracking-[0.1em] transition',
                   angleMode === value
-                    ? 'bg-cyan-500 text-white'
+                    ? 'accent-solid'
                     : 'text-slate-600 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white',
                 )}
               >
@@ -235,7 +235,7 @@ export function Keypad({
                 className={cn(
                   'rounded-lg px-2.5 py-1 text-xs font-semibold uppercase tracking-[0.08em] transition',
                   programmerBase === value
-                    ? 'bg-cyan-500 text-white'
+                    ? 'accent-solid'
                     : 'text-slate-600 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white',
                 )}
               >

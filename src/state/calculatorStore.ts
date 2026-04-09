@@ -10,10 +10,15 @@ import {
 import type { AppLanguageCode } from '../i18n/languages'
 import { STORAGE_KEYS } from '../persistence/keys'
 import {
+  defaultAccentColor,
+  isSupportedAccentColor,
+} from '../theme/accentPalette'
+import {
   currencyService,
   supportedCurrencies,
 } from '../providers/currency/currencyService'
 import {
+  AccentColor,
   AngleMode,
   CalculatorMode,
   CurrencyConverterState,
@@ -36,6 +41,7 @@ interface CalculatorStore {
   mode: CalculatorMode
   sidePanelTab: SidePanelTab
   theme: ThemeMode
+  accentColor: AccentColor
   language: AppLanguageCode
   angleMode: AngleMode
   programmerBase: ProgrammerBase
@@ -57,6 +63,7 @@ interface CalculatorStore {
   setMode: (mode: CalculatorMode) => void
   setSidePanelTab: (tab: SidePanelTab) => void
   setTheme: (theme: ThemeMode) => void
+  setAccentColor: (accentColor: AccentColor) => void
   setLanguage: (language: AppLanguageCode) => void
   toggleAdvancedCollapsed: () => void
 
@@ -249,6 +256,7 @@ export const useCalculatorStore = create<CalculatorStore>()(
         mode: 'standard',
         sidePanelTab: 'history',
         theme: 'system',
+        accentColor: defaultAccentColor,
         language: defaultLanguage,
         angleMode: 'deg',
         programmerBase: 'dec',
@@ -287,6 +295,7 @@ export const useCalculatorStore = create<CalculatorStore>()(
 
         setSidePanelTab: (sidePanelTab) => set({ sidePanelTab }),
         setTheme: (theme) => set({ theme }),
+        setAccentColor: (accentColor) => set({ accentColor }),
         setLanguage: (language) =>
           set((state) => ({
             language,
@@ -736,6 +745,7 @@ export const useCalculatorStore = create<CalculatorStore>()(
         mode: state.mode,
         sidePanelTab: state.sidePanelTab,
         theme: state.theme,
+        accentColor: state.accentColor,
         language: state.language,
         angleMode: state.angleMode,
         programmerBase: state.programmerBase,
@@ -759,6 +769,10 @@ export const useCalculatorStore = create<CalculatorStore>()(
           state.language = isSupportedLanguage(state.language)
             ? state.language
             : defaultLanguage
+
+          state.accentColor = isSupportedAccentColor(state.accentColor)
+            ? state.accentColor
+            : defaultAccentColor
 
           state.unitConverter = calculateUnitOutput(
             state.unitConverter,

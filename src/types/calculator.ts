@@ -9,6 +9,15 @@
 
 export type AngleMode = 'deg' | 'rad'
 export type ThemeMode = 'light' | 'dark' | 'system'
+export type AccentColor =
+  | 'cyan'
+  | 'blue'
+  | 'emerald'
+  | 'violet'
+  | 'rose'
+  | 'amber'
+  | 'teal'
+  | 'slate'
 export type SidePanelTab = 'history' | 'favorites' | 'settings'
 export type ProgrammerBase = 'bin' | 'oct' | 'dec' | 'hex'
 

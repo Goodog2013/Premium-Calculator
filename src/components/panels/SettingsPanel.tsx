@@ -3,14 +3,17 @@ import { useState } from 'react'
 import { defaultLanguage, languageOptions } from '../../i18n/languages'
 import type { AppLanguageCode } from '../../i18n/languages'
 import { pickUiText } from '../../i18n/uiText'
-import type { AngleMode, ThemeMode } from '../../types/calculator'
+import { accentOptions } from '../../theme/accentPalette'
+import type { AccentColor, AngleMode, ThemeMode } from '../../types/calculator'
 import { cn } from '../../utils/cn'
 
 interface SettingsPanelProps {
   theme: ThemeMode
+  accentColor: AccentColor
   language: AppLanguageCode
   angleMode: AngleMode
   onThemeChange: (theme: ThemeMode) => void
+  onAccentColorChange: (accentColor: AccentColor) => void
   onLanguageChange: (language: AppLanguageCode) => void
   onDetectLanguageByIp: () => Promise<AppLanguageCode>
   onAngleModeChange: (mode: AngleMode) => void
@@ -18,9 +21,11 @@ interface SettingsPanelProps {
 
 export function SettingsPanel({
   theme,
+  accentColor,
   language,
   angleMode,
   onThemeChange,
+  onAccentColorChange,
   onLanguageChange,
   onDetectLanguageByIp,
   onAngleModeChange,
@@ -33,6 +38,7 @@ export function SettingsPanel({
   const themeLightLabel = pickUiText(language, 'Light', 'Светлая')
   const themeDarkLabel = pickUiText(language, 'Dark', 'Темная')
   const themeSystemLabel = pickUiText(language, 'System', 'Системная')
+  const accentLabel = pickUiText(language, 'Accent color', 'Акцентный цвет')
   const languageLabel = pickUiText(
     language,
     'Language (50 most-used world languages)',
@@ -96,13 +102,49 @@ export function SettingsPanel({
           <select
             value={theme}
             onChange={(event) => onThemeChange(event.target.value as ThemeMode)}
-            className="mt-1 w-full rounded-xl border border-slate-300/70 bg-white/90 px-3 py-2 text-sm outline-none transition focus:border-cyan-400/80 dark:border-slate-700 dark:bg-slate-900/80"
+            className="accent-focus mt-1 w-full rounded-xl border border-slate-300/70 bg-white/90 px-3 py-2 text-sm outline-none transition dark:border-slate-700 dark:bg-slate-900/80"
           >
             <option value="light">{themeLightLabel}</option>
             <option value="dark">{themeDarkLabel}</option>
             <option value="system">{themeSystemLabel}</option>
           </select>
         </label>
+      </div>
+
+      <div className="rounded-2xl border border-slate-300/70 bg-white/70 p-3 dark:border-slate-700 dark:bg-slate-900/60">
+        <p className="text-xs font-medium text-slate-600 dark:text-slate-300">
+          {accentLabel}
+        </p>
+
+        <div className="mt-2 grid grid-cols-4 gap-2">
+          {accentOptions.map((option) => {
+            const active = option.id === accentColor
+            const label = pickUiText(language, option.labelEn, option.labelRu)
+
+            return (
+              <button
+                key={option.id}
+                type="button"
+                onClick={() => onAccentColorChange(option.id)}
+                className={cn(
+                  'inline-flex items-center gap-2 rounded-xl border px-2 py-2 text-[11px] font-semibold transition',
+                  active
+                    ? 'border-slate-900/70 bg-slate-100 text-slate-900 dark:border-white/60 dark:bg-slate-800 dark:text-white'
+                    : 'border-slate-300/70 bg-white/80 text-slate-600 hover:border-slate-500/70 dark:border-slate-700 dark:bg-slate-900/70 dark:text-slate-300',
+                )}
+                aria-label={label}
+              >
+                <span
+                  className="h-3 w-3 rounded-full"
+                  style={{
+                    backgroundColor: `rgb(${option.rgb.join(' ')})`,
+                  }}
+                />
+                <span className="truncate">{label}</span>
+              </button>
+            )
+          })}
+        </div>
       </div>
 
       <div className="rounded-2xl border border-slate-300/70 bg-white/70 p-3 dark:border-slate-700 dark:bg-slate-900/60">
@@ -117,7 +159,7 @@ export function SettingsPanel({
               onLanguageChange(event.target.value as AppLanguageCode)
             }
             aria-label={pickUiText(language, 'Language', 'Язык')}
-            className="w-full rounded-xl border border-slate-300/70 bg-white/90 px-3 py-2 text-sm outline-none transition focus:border-cyan-400/80 dark:border-slate-700 dark:bg-slate-900/80"
+            className="accent-focus w-full rounded-xl border border-slate-300/70 bg-white/90 px-3 py-2 text-sm outline-none transition dark:border-slate-700 dark:bg-slate-900/80"
           >
             {languageOptions.map((option) => (
               <option key={option.code} value={option.code}>
@@ -131,10 +173,8 @@ export function SettingsPanel({
             onClick={() => void handleDetectLanguage()}
             disabled={isDetectingLanguage}
             className={cn(
-              'inline-flex min-w-[104px] items-center justify-center gap-1 rounded-xl border px-3 py-2 text-xs font-semibold transition',
-              'border-cyan-400/70 bg-cyan-100/70 text-cyan-900 hover:bg-cyan-100',
+              'accent-soft inline-flex min-w-[104px] items-center justify-center gap-1 rounded-xl border px-3 py-2 text-xs font-semibold transition',
               'disabled:cursor-not-allowed disabled:opacity-70',
-              'dark:border-cyan-500/60 dark:bg-cyan-500/15 dark:text-cyan-200 dark:hover:bg-cyan-500/25',
             )}
           >
             <LocateFixed
@@ -150,9 +190,7 @@ export function SettingsPanel({
         <p className="mt-2 text-[11px] text-slate-500 dark:text-slate-400">
           {defaultLabel}: {defaultLanguage} (English). {languageHint}
         </p>
-        <p className="h-4 text-[11px] text-cyan-700 dark:text-cyan-300">
-          {detectLanguageNote ?? ' '}
-        </p>
+        <p className="accent-note h-4 text-[11px]">{detectLanguageNote ?? ' '}</p>
       </div>
 
       <div className="rounded-2xl border border-slate-300/70 bg-white/70 p-3 dark:border-slate-700 dark:bg-slate-900/60">
@@ -165,11 +203,12 @@ export function SettingsPanel({
               key={value}
               type="button"
               onClick={() => onAngleModeChange(value)}
-              className={`rounded-xl border px-3 py-2 text-xs font-semibold uppercase tracking-[0.1em] transition ${
+              className={cn(
+                'rounded-xl border px-3 py-2 text-xs font-semibold uppercase tracking-[0.1em] transition',
                 value === angleMode
-                  ? 'border-cyan-400/80 bg-cyan-500 text-white'
-                  : 'border-slate-300/70 bg-white/80 text-slate-700 hover:border-cyan-400/80 dark:border-slate-700 dark:bg-slate-900/70 dark:text-slate-300'
-              }`}
+                  ? 'accent-solid'
+                  : 'border-slate-300/70 bg-white/80 text-slate-700 accent-border-hover dark:border-slate-700 dark:bg-slate-900/70 dark:text-slate-300',
+              )}
             >
               {value}
             </button>
@@ -177,8 +216,8 @@ export function SettingsPanel({
         </div>
       </div>
 
-      <div className="rounded-2xl border border-dashed border-cyan-300/60 bg-cyan-50/50 p-3 text-xs text-slate-600 dark:border-cyan-500/30 dark:bg-cyan-900/10 dark:text-slate-300">
-        <p className="mb-2 inline-flex items-center gap-2 font-semibold uppercase tracking-[0.14em] text-cyan-700 dark:text-cyan-300">
+      <div className="rounded-2xl border border-dashed border-slate-300/70 bg-slate-50/50 p-3 text-xs text-slate-600 dark:border-slate-700 dark:bg-slate-900/20 dark:text-slate-300">
+        <p className="accent-note mb-2 inline-flex items-center gap-2 font-semibold uppercase tracking-[0.14em]">
           <Sparkles className="h-3.5 w-3.5" /> {keyboardShortcutsLabel}
         </p>
         <p>{shortcutsHint1}</p>

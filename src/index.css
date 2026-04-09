@@ -9,6 +9,9 @@
   --font-display: 'Sora', 'Trebuchet MS', sans-serif;
   --font-body: 'Space Grotesk', 'Segoe UI', sans-serif;
   --font-mono: 'JetBrains Mono', 'Consolas', monospace;
+  --accent-rgb: 6 182 212;
+  --accent-soft-rgb: 207 250 254;
+  --accent-deep-rgb: 8 145 178;
 }
 
 :root[data-theme='dark'] {
@@ -88,7 +91,73 @@ body {
 }
 
 ::selection {
-  background: rgba(6, 182, 212, 0.3);
+  background: rgb(var(--accent-rgb) / 0.3);
+}
+
+.accent-text {
+  color: rgb(var(--accent-deep-rgb));
+}
+
+:root[data-theme='dark'] .accent-text {
+  color: rgb(var(--accent-rgb));
+}
+
+.accent-note {
+  color: rgb(var(--accent-deep-rgb));
+}
+
+:root[data-theme='dark'] .accent-note {
+  color: rgb(var(--accent-rgb));
+}
+
+.accent-border-hover:hover {
+  border-color: rgb(var(--accent-rgb) / 0.72);
+}
+
+.accent-focus:focus {
+  border-color: rgb(var(--accent-rgb) / 0.82);
+}
+
+.accent-soft {
+  border-color: rgb(var(--accent-rgb) / 0.68);
+  background-color: rgb(var(--accent-soft-rgb) / 0.72);
+  color: rgb(14 116 144);
+}
+
+.accent-soft:hover {
+  background-color: rgb(var(--accent-soft-rgb) / 0.95);
+}
+
+.accent-soft-hover:hover {
+  background-color: rgb(var(--accent-soft-rgb) / 0.7);
+}
+
+:root[data-theme='dark'] .accent-soft {
+  border-color: rgb(var(--accent-rgb) / 0.55);
+  background-color: rgb(var(--accent-rgb) / 0.2);
+  color: rgb(186 230 253);
+}
+
+:root[data-theme='dark'] .accent-soft:hover {
+  background-color: rgb(var(--accent-rgb) / 0.3);
+}
+
+:root[data-theme='dark'] .accent-soft-hover:hover {
+  background-color: rgb(var(--accent-rgb) / 0.2);
+}
+
+.accent-solid {
+  border-color: rgb(var(--accent-rgb) / 0.85);
+  background-color: rgb(var(--accent-rgb));
+  color: white;
+}
+
+.accent-solid:hover {
+  filter: brightness(1.04);
+}
+
+.accent-dot {
+  background-color: rgb(var(--accent-rgb) / 0.9);
 }
 
 @keyframes ambient-float {

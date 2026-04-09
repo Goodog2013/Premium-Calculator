@@ -15,6 +15,7 @@ import { SettingsPanel } from '../components/panels/SettingsPanel'
 import { SymbolicPanel } from '../components/panels/SymbolicPanel'
 import { copyToClipboard } from '../desktop/bindings'
 import { useCurrencyAutoRefresh } from '../hooks/useCurrencyAutoRefresh'
+import { useAccentSync } from '../hooks/useAccentSync'
 import { useKeyboardInput } from '../hooks/useKeyboardInput'
 import { useLanguageSync } from '../hooks/useLanguageSync'
 import { useThemeSync } from '../hooks/useThemeSync'
@@ -32,6 +33,7 @@ import { cn } from '../utils/cn'
 
 export function CalculatorApp() {
   useThemeSync()
+  useAccentSync()
   useLanguageSync()
   useKeyboardInput()
   useCurrencyAutoRefresh()
@@ -41,6 +43,7 @@ export function CalculatorApp() {
   const mode = useCalculatorStore((state) => state.mode)
   const sidePanelTab = useCalculatorStore((state) => state.sidePanelTab)
   const theme = useCalculatorStore((state) => state.theme)
+  const accentColor = useCalculatorStore((state) => state.accentColor)
   const language = useCalculatorStore((state) => state.language)
   const angleMode = useCalculatorStore((state) => state.angleMode)
   const programmerBase = useCalculatorStore((state) => state.programmerBase)
@@ -64,6 +67,7 @@ export function CalculatorApp() {
   const setMode = useCalculatorStore((state) => state.setMode)
   const setSidePanelTab = useCalculatorStore((state) => state.setSidePanelTab)
   const setTheme = useCalculatorStore((state) => state.setTheme)
+  const setAccentColor = useCalculatorStore((state) => state.setAccentColor)
   const setLanguage = useCalculatorStore((state) => state.setLanguage)
   const setAngleMode = useCalculatorStore((state) => state.setAngleMode)
   const setProgrammerBase = useCalculatorStore((state) => state.setProgrammerBase)
@@ -246,7 +250,7 @@ export function CalculatorApp() {
         <GlassCard className="p-5">
           <div className="flex flex-wrap items-start justify-between gap-4">
             <div>
-              <p className="text-[11px] uppercase tracking-[0.28em] text-cyan-700 dark:text-cyan-300">
+              <p className="accent-text text-[11px] uppercase tracking-[0.28em]">
                 {heroBadgeLabel}
               </p>
               <h1 className="mt-2 font-display text-3xl leading-tight text-slate-950 dark:text-white md:text-4xl">
@@ -416,8 +420,8 @@ export function CalculatorApp() {
                     className={cn(
                       'inline-flex items-center justify-center gap-2 rounded-xl border px-2 py-2 text-xs font-semibold transition',
                       active
-                        ? 'border-cyan-400/80 bg-cyan-500 text-white'
-                        : 'border-slate-300/70 bg-white/70 text-slate-600 hover:border-cyan-400/70 dark:border-slate-700 dark:bg-slate-900/60 dark:text-slate-300',
+                        ? 'accent-solid'
+                        : 'border-slate-300/70 bg-white/70 text-slate-600 accent-border-hover dark:border-slate-700 dark:bg-slate-900/60 dark:text-slate-300',
                     )}
                   >
                     <Icon className="h-3.5 w-3.5" />
@@ -472,9 +476,11 @@ export function CalculatorApp() {
                 >
                   <SettingsPanel
                     theme={theme}
+                    accentColor={accentColor}
                     language={language}
                     angleMode={angleMode}
                     onThemeChange={setTheme}
+                    onAccentColorChange={setAccentColor}
                     onLanguageChange={setLanguage}
                     onDetectLanguageByIp={handleDetectLanguageByIp}
                     onAngleModeChange={setAngleMode}
