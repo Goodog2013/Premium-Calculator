@@ -1,13 +1,16 @@
-﻿import { Clock3, Trash2 } from 'lucide-react'
+import { Clock3, Trash2 } from 'lucide-react'
+import type { AppLanguageCode } from '../../i18n/languages'
 import { HistoryEntry } from '../../types/calculator'
 
 interface HistoryPanelProps {
+  language: AppLanguageCode
   history: HistoryEntry[]
   onUse: (id: string) => void
   onClear: () => void
 }
 
 export function HistoryPanel({
+  language,
   history,
   onUse,
   onClear,
@@ -49,7 +52,7 @@ export function HistoryPanel({
               {entry.result}
             </p>
             <p className="text-[10px] uppercase tracking-[0.14em] text-slate-500 dark:text-slate-400">
-              {new Date(entry.createdAt).toLocaleTimeString()}
+              {new Date(entry.createdAt).toLocaleTimeString(language)}
             </p>
           </button>
         ))}

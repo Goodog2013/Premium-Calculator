@@ -1,4 +1,4 @@
-﻿import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import { History, Settings, Star } from 'lucide-react'
 import { ExpressionDisplay } from '../components/calculator/ExpressionDisplay'
@@ -12,6 +12,7 @@ import { HistoryPanel } from '../components/panels/HistoryPanel'
 import { SettingsPanel } from '../components/panels/SettingsPanel'
 import { copyToClipboard } from '../desktop/bindings'
 import { useKeyboardInput } from '../hooks/useKeyboardInput'
+import { useLanguageSync } from '../hooks/useLanguageSync'
 import { useThemeSync } from '../hooks/useThemeSync'
 import {
   supportedCurrencies,
@@ -28,6 +29,7 @@ const sideTabs: Array<{ id: SidePanelTab; label: string; icon: typeof History }>
 
 export function CalculatorApp() {
   useThemeSync()
+  useLanguageSync()
   useKeyboardInput()
 
   const [copyStatus, setCopyStatus] = useState<'idle' | 'done'>('idle')
@@ -35,6 +37,7 @@ export function CalculatorApp() {
   const mode = useCalculatorStore((state) => state.mode)
   const sidePanelTab = useCalculatorStore((state) => state.sidePanelTab)
   const theme = useCalculatorStore((state) => state.theme)
+  const language = useCalculatorStore((state) => state.language)
   const angleMode = useCalculatorStore((state) => state.angleMode)
   const programmerBase = useCalculatorStore((state) => state.programmerBase)
   const isAdvancedCollapsed = useCalculatorStore(
@@ -57,6 +60,7 @@ export function CalculatorApp() {
   const setMode = useCalculatorStore((state) => state.setMode)
   const setSidePanelTab = useCalculatorStore((state) => state.setSidePanelTab)
   const setTheme = useCalculatorStore((state) => state.setTheme)
+  const setLanguage = useCalculatorStore((state) => state.setLanguage)
   const setAngleMode = useCalculatorStore((state) => state.setAngleMode)
   const setProgrammerBase = useCalculatorStore((state) => state.setProgrammerBase)
   const toggleAdvancedCollapsed = useCalculatorStore(
@@ -217,6 +221,7 @@ export function CalculatorApp() {
                   >
                     <ConvertersPanel
                       mode={converterMode}
+                      language={language}
                       unitState={unitConverter}
                       currencyState={currencyConverter}
                       supportedCurrencies={supportedCurrencies}
@@ -287,6 +292,7 @@ export function CalculatorApp() {
                   transition={{ duration: 0.16 }}
                 >
                   <HistoryPanel
+                    language={language}
                     history={history}
                     onUse={applyHistory}
                     onClear={clearHistory}
@@ -320,8 +326,10 @@ export function CalculatorApp() {
                 >
                   <SettingsPanel
                     theme={theme}
+                    language={language}
                     angleMode={angleMode}
                     onThemeChange={setTheme}
+                    onLanguageChange={setLanguage}
                     onAngleModeChange={setAngleMode}
                   />
                 </motion.div>

@@ -1,5 +1,6 @@
-﻿import { RefreshCw } from 'lucide-react'
+import { RefreshCw } from 'lucide-react'
 import { unitCatalog } from '../../converters/unitCatalog'
+import type { AppLanguageCode } from '../../i18n/languages'
 import {
   CurrencyConverterState,
   UnitConverterState,
@@ -8,6 +9,7 @@ import {
 
 interface ConvertersPanelProps {
   mode: 'unit' | 'currency' | 'other'
+  language: AppLanguageCode
   unitState: UnitConverterState
   currencyState: CurrencyConverterState
   supportedCurrencies: string[]
@@ -23,6 +25,7 @@ interface ConvertersPanelProps {
 
 export function ConvertersPanel({
   mode,
+  language,
   unitState,
   currencyState,
   supportedCurrencies,
@@ -185,7 +188,7 @@ export function ConvertersPanel({
           <p className="mt-2 text-[11px] text-slate-500 dark:text-slate-400">
             Provider: {currencyState.providerName}
             {currencyState.lastUpdatedAt
-              ? ` · ${new Date(currencyState.lastUpdatedAt).toLocaleString()}`
+              ? ` · ${new Date(currencyState.lastUpdatedAt).toLocaleString(language)}`
               : ''}
           </p>
           <p className="h-4 text-xs text-rose-500 dark:text-rose-300">

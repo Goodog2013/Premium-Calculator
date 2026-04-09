@@ -1,4 +1,4 @@
-﻿import { describe, expect, it } from 'vitest'
+import { describe, expect, it } from 'vitest'
 import {
   formatNumber,
   formatProgrammerValue,
@@ -8,6 +8,10 @@ import {
 describe('numberFormatter', () => {
   it('formats numbers with grouping', () => {
     expect(formatNumber(12345.6789)).toBe('12,345.6789')
+  })
+
+  it('formats numbers with locale-specific separators', () => {
+    expect(formatNumber(12345.6789, { locale: 'de-DE' })).toBe('12.345,6789')
   })
 
   it('formats very small values in exponential form', () => {
@@ -21,6 +25,10 @@ describe('numberFormatter', () => {
 
   it('parses formatted display values', () => {
     expect(parseDisplayNumber('1,024.5')).toBe(1024.5)
+  })
+
+  it('parses localized display values', () => {
+    expect(parseDisplayNumber('1 024,5', 'fr-FR')).toBe(1024.5)
   })
 
   it('parses programmer-prefixed values', () => {

@@ -1,17 +1,26 @@
-﻿import { Sparkles } from 'lucide-react'
-import { AngleMode, ThemeMode } from '../../types/calculator'
+import { Sparkles } from 'lucide-react'
+import {
+  defaultLanguage,
+  languageOptions,
+} from '../../i18n/languages'
+import type { AppLanguageCode } from '../../i18n/languages'
+import type { AngleMode, ThemeMode } from '../../types/calculator'
 
 interface SettingsPanelProps {
   theme: ThemeMode
+  language: AppLanguageCode
   angleMode: AngleMode
   onThemeChange: (theme: ThemeMode) => void
+  onLanguageChange: (language: AppLanguageCode) => void
   onAngleModeChange: (mode: AngleMode) => void
 }
 
 export function SettingsPanel({
   theme,
+  language,
   angleMode,
   onThemeChange,
+  onLanguageChange,
   onAngleModeChange,
 }: SettingsPanelProps) {
   return (
@@ -33,6 +42,28 @@ export function SettingsPanel({
             <option value="system">System</option>
           </select>
         </label>
+      </div>
+
+      <div className="rounded-2xl border border-slate-300/70 bg-white/70 p-3 dark:border-slate-700 dark:bg-slate-900/60">
+        <label className="text-xs font-medium text-slate-600 dark:text-slate-300">
+          Language (50 most-used world languages)
+          <select
+            value={language}
+            onChange={(event) =>
+              onLanguageChange(event.target.value as AppLanguageCode)
+            }
+            className="mt-1 w-full rounded-xl border border-slate-300/70 bg-white/90 px-3 py-2 text-sm outline-none transition focus:border-cyan-400/80 dark:border-slate-700 dark:bg-slate-900/80"
+          >
+            {languageOptions.map((option) => (
+              <option key={option.code} value={option.code}>
+                {option.nativeName} ({option.englishName})
+              </option>
+            ))}
+          </select>
+        </label>
+        <p className="mt-2 text-[11px] text-slate-500 dark:text-slate-400">
+          Affects locale formatting and text direction. Default: {defaultLanguage}.
+        </p>
       </div>
 
       <div className="rounded-2xl border border-slate-300/70 bg-white/70 p-3 dark:border-slate-700 dark:bg-slate-900/60">
@@ -67,4 +98,3 @@ export function SettingsPanel({
     </section>
   )
 }
-

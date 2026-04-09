@@ -115,6 +115,7 @@ npm run lint
 - Degree/Radian switch
 - Memory actions (`MC`, `MR`, `M+`, `M-`, `MS`)
 - Keyboard support (input + mode shortcuts)
+- Language preference in Settings (50 most-used world languages)
 - Copy result
 - Friendly error handling
 - Persistence across sessions

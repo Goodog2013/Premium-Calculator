@@ -1,4 +1,4 @@
-﻿import { beforeEach, describe, expect, it } from 'vitest'
+import { beforeEach, describe, expect, it } from 'vitest'
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import App from '../App'
@@ -9,6 +9,7 @@ function resetStore(): void {
     mode: 'standard',
     sidePanelTab: 'history',
     theme: 'system',
+    language: 'en-US',
     angleMode: 'deg',
     programmerBase: 'dec',
     isAdvancedCollapsed: false,
@@ -79,6 +80,20 @@ describe('calculator ui flow', () => {
     await waitFor(() => {
       expect(useCalculatorStore.getState().result).toBe('3')
     })
+  })
+
+  it('changes app language from settings', async () => {
+    const user = userEvent.setup()
+    render(<App />)
+
+    await user.click(screen.getByRole('button', { name: /settings/i }))
+    const languageSelect = await screen.findByLabelText(/language/i)
+    await user.selectOptions(
+      languageSelect,
+      'ru-RU',
+    )
+
+    expect(useCalculatorStore.getState().language).toBe('ru-RU')
   })
 })
 

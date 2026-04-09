@@ -1,8 +1,13 @@
-﻿import { create } from 'zustand'
+import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 import { convertUnits } from '../converters/unitConverter'
 import { evaluateExpression, evaluateGraphPoints } from '../engine/mathEngine'
 import { parseDisplayNumber, formatNumber, formatProgrammerValue } from '../format/numberFormatter'
+import {
+  defaultLanguage,
+  isSupportedLanguage,
+} from '../i18n/languages'
+import type { AppLanguageCode } from '../i18n/languages'
 import { STORAGE_KEYS } from '../persistence/keys'
 import {
   currencyService,
@@ -26,6 +31,7 @@ interface CalculatorStore {
   mode: CalculatorMode
   sidePanelTab: SidePanelTab
   theme: ThemeMode
+  language: AppLanguageCode
   angleMode: AngleMode
   programmerBase: ProgrammerBase
   isAdvancedCollapsed: boolean
@@ -46,6 +52,7 @@ interface CalculatorStore {
   setMode: (mode: CalculatorMode) => void
   setSidePanelTab: (tab: SidePanelTab) => void
   setTheme: (theme: ThemeMode) => void
+  setLanguage: (language: AppLanguageCode) => void
   toggleAdvancedCollapsed: () => void
 
   setAngleMode: (mode: AngleMode) => void
@@ -124,6 +131,7 @@ function evaluatePreview(state: {
   mode: CalculatorMode
   angleMode: AngleMode
   programmerBase: ProgrammerBase
+  language: AppLanguageCode
 }): string {
   const expression = state.expression.trim()
   if (!expression) return ''
@@ -137,13 +145,16 @@ function evaluatePreview(state: {
 
     return state.mode === 'programmer'
       ? formatProgrammerValue(value, state.programmerBase)
-      : formatNumber(value)
+      : formatNumber(value, { locale: state.language })
   } catch {
     return ''
   }
 }
 
-function calculateUnitOutput(state: UnitConverterState): UnitConverterState {
+function calculateUnitOutput(
+  state: UnitConverterState,
+  language: AppLanguageCode,
+): UnitConverterState {
   const numeric = Number(state.inputValue)
   if (!Number.isFinite(numeric)) {
     return { ...state, outputValue: '', error: 'Enter a valid number' }
@@ -159,7 +170,10 @@ function calculateUnitOutput(state: UnitConverterState): UnitConverterState {
 
     return {
       ...state,
-      outputValue: formatNumber(converted, { maxFractionDigits: 10 }),
+      outputValue: formatNumber(converted, {
+        maxFractionDigits: 10,
+        locale: language,
+      }),
       error: null,
     }
   } catch (error) {
@@ -174,6 +188,7 @@ function calculateUnitOutput(state: UnitConverterState): UnitConverterState {
 function computeCurrencyOutput(
   state: CurrencyConverterState,
   rates: Record<string, number> | null,
+  language: AppLanguageCode,
 ): CurrencyConverterState {
   const amount = Number(state.amount)
   if (!Number.isFinite(amount)) {
@@ -191,7 +206,10 @@ function computeCurrencyOutput(
 
   return {
     ...state,
-    outputValue: formatNumber(amount * quoteRate, { maxFractionDigits: 6 }),
+    outputValue: formatNumber(amount * quoteRate, {
+      maxFractionDigits: 6,
+      locale: language,
+    }),
     error: null,
   }
 }
@@ -226,6 +244,7 @@ export const useCalculatorStore = create<CalculatorStore>()(
         mode: 'standard',
         sidePanelTab: 'history',
         theme: 'system',
+        language: defaultLanguage,
         angleMode: 'deg',
         programmerBase: 'dec',
         isAdvancedCollapsed: false,
@@ -252,6 +271,7 @@ export const useCalculatorStore = create<CalculatorStore>()(
               mode,
               angleMode: state.angleMode,
               programmerBase: state.programmerBase,
+              language: state.language,
             }),
           }))
 
@@ -262,6 +282,21 @@ export const useCalculatorStore = create<CalculatorStore>()(
 
         setSidePanelTab: (sidePanelTab) => set({ sidePanelTab }),
         setTheme: (theme) => set({ theme }),
+        setLanguage: (language) =>
+          set((state) => ({
+            language,
+            preview: evaluatePreview({
+              expression: state.expression,
+              mode: state.mode,
+              angleMode: state.angleMode,
+              programmerBase: state.programmerBase,
+              language,
+            }),
+            unitConverter: calculateUnitOutput(state.unitConverter, language),
+            currencyConverter: lastRates
+              ? computeCurrencyOutput(state.currencyConverter, lastRates, language)
+              : state.currencyConverter,
+          })),
         toggleAdvancedCollapsed: () =>
           set((state) => ({ isAdvancedCollapsed: !state.isAdvancedCollapsed })),
 
@@ -273,6 +308,7 @@ export const useCalculatorStore = create<CalculatorStore>()(
               mode: state.mode,
               angleMode,
               programmerBase: state.programmerBase,
+              language: state.language,
             }),
           }))
           set({ graph: recalcGraph() })
@@ -286,6 +322,7 @@ export const useCalculatorStore = create<CalculatorStore>()(
               mode: state.mode,
               angleMode: state.angleMode,
               programmerBase,
+              language: state.language,
             }),
           }))
         },
@@ -298,6 +335,7 @@ export const useCalculatorStore = create<CalculatorStore>()(
               mode: state.mode,
               angleMode: state.angleMode,
               programmerBase: state.programmerBase,
+              language: state.language,
             }),
             error: null,
           }))
@@ -313,6 +351,7 @@ export const useCalculatorStore = create<CalculatorStore>()(
                 mode: state.mode,
                 angleMode: state.angleMode,
                 programmerBase: state.programmerBase,
+                language: state.language,
               }),
               error: null,
             }
@@ -329,6 +368,7 @@ export const useCalculatorStore = create<CalculatorStore>()(
                 mode: state.mode,
                 angleMode: state.angleMode,
                 programmerBase: state.programmerBase,
+                language: state.language,
               }),
               error: null,
             }
@@ -364,7 +404,7 @@ export const useCalculatorStore = create<CalculatorStore>()(
             const formattedResult =
               mode === 'programmer'
                 ? formatProgrammerValue(value, state.programmerBase)
-                : formatNumber(value)
+                : formatNumber(value, { locale: state.language })
 
             const nextHistory: HistoryEntry[] = [
               {
@@ -430,6 +470,7 @@ export const useCalculatorStore = create<CalculatorStore>()(
               mode: favorite.mode,
               angleMode: state.angleMode,
               programmerBase: state.programmerBase,
+              language: state.language,
             }),
             error: null,
           }))
@@ -453,6 +494,7 @@ export const useCalculatorStore = create<CalculatorStore>()(
               mode: entry.mode,
               angleMode: state.angleMode,
               programmerBase: state.programmerBase,
+              language: state.language,
             }),
             error: null,
           }))
@@ -461,18 +503,18 @@ export const useCalculatorStore = create<CalculatorStore>()(
         memoryClear: () => set({ memoryValue: null }),
 
         memoryStore: () => {
-          const { result } = get()
+          const { result, language } = get()
           try {
-            set({ memoryValue: parseDisplayNumber(result) })
+            set({ memoryValue: parseDisplayNumber(result, language) })
           } catch {
             // Ignore invalid numbers from display.
           }
         },
 
         memoryAdd: () => {
-          const { memoryValue, result } = get()
+          const { memoryValue, result, language } = get()
           try {
-            const next = (memoryValue ?? 0) + parseDisplayNumber(result)
+            const next = (memoryValue ?? 0) + parseDisplayNumber(result, language)
             set({ memoryValue: next })
           } catch {
             // Ignore invalid numbers from display.
@@ -480,9 +522,9 @@ export const useCalculatorStore = create<CalculatorStore>()(
         },
 
         memorySubtract: () => {
-          const { memoryValue, result } = get()
+          const { memoryValue, result, language } = get()
           try {
-            const next = (memoryValue ?? 0) - parseDisplayNumber(result)
+            const next = (memoryValue ?? 0) - parseDisplayNumber(result, language)
             set({ memoryValue: next })
           } catch {
             // Ignore invalid numbers from display.
@@ -496,7 +538,11 @@ export const useCalculatorStore = create<CalculatorStore>()(
           const token =
             mode === 'programmer'
               ? formatProgrammerValue(memoryValue, programmerBase)
-              : formatNumber(memoryValue, { maxFractionDigits: 12, useGrouping: false })
+              : formatNumber(memoryValue, {
+                  maxFractionDigits: 12,
+                  useGrouping: false,
+                  locale: 'en-US',
+                })
 
           set((state) => {
             const expression = `${state.expression}${token}`
@@ -507,6 +553,7 @@ export const useCalculatorStore = create<CalculatorStore>()(
                 mode: state.mode,
                 angleMode: state.angleMode,
                 programmerBase: state.programmerBase,
+                language: state.language,
               }),
             }
           })
@@ -530,7 +577,7 @@ export const useCalculatorStore = create<CalculatorStore>()(
               category,
               fromUnit: defaults[category].from,
               toUnit: defaults[category].to,
-            })
+            }, state.language)
 
             return { unitConverter: next }
           })
@@ -541,7 +588,7 @@ export const useCalculatorStore = create<CalculatorStore>()(
             unitConverter: calculateUnitOutput({
               ...state.unitConverter,
               fromUnit,
-            }),
+            }, state.language),
           })),
 
         setUnitTo: (toUnit) =>
@@ -549,7 +596,7 @@ export const useCalculatorStore = create<CalculatorStore>()(
             unitConverter: calculateUnitOutput({
               ...state.unitConverter,
               toUnit,
-            }),
+            }, state.language),
           })),
 
         setUnitInput: (inputValue) =>
@@ -557,7 +604,7 @@ export const useCalculatorStore = create<CalculatorStore>()(
             unitConverter: calculateUnitOutput({
               ...state.unitConverter,
               inputValue,
-            }),
+            }, state.language),
           })),
 
         setCurrencyBase: async (base) => {
@@ -578,6 +625,7 @@ export const useCalculatorStore = create<CalculatorStore>()(
                 quote,
               },
               lastRates,
+              state.language,
             ),
           })),
 
@@ -589,6 +637,7 @@ export const useCalculatorStore = create<CalculatorStore>()(
                 amount,
               },
               lastRates,
+              state.language,
             ),
           })),
 
@@ -616,6 +665,7 @@ export const useCalculatorStore = create<CalculatorStore>()(
                   isLoading: false,
                 },
                 rates.rates,
+                state.language,
               ),
             }))
           } catch (error) {
@@ -666,6 +716,7 @@ export const useCalculatorStore = create<CalculatorStore>()(
         mode: state.mode,
         sidePanelTab: state.sidePanelTab,
         theme: state.theme,
+        language: state.language,
         angleMode: state.angleMode,
         programmerBase: state.programmerBase,
         isAdvancedCollapsed: state.isAdvancedCollapsed,
@@ -685,7 +736,14 @@ export const useCalculatorStore = create<CalculatorStore>()(
         return (state) => {
           if (!state) return
 
-          state.unitConverter = calculateUnitOutput(state.unitConverter)
+          state.language = isSupportedLanguage(state.language)
+            ? state.language
+            : defaultLanguage
+
+          state.unitConverter = calculateUnitOutput(
+            state.unitConverter,
+            state.language,
+          )
 
           if (!supportedCurrencies.includes(state.currencyConverter.base)) {
             state.currencyConverter.base = 'USD'
