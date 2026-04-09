@@ -123,7 +123,8 @@ cmd /c 'call "C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Auxilia
 - `src-tauri/target/release/bundle/msi/GreatCalc_0.1.0_x64_en-US.msi`
 - `Releases/desktop/`
 - `Releases/web/`
-- `Releases/custom-installer/GreatCalc_0.1.0_custom-installer.exe`
+- `Releases/custom-installer/GreatCalcInstaller.exe`
+- Release asset name: `Premium Calculator Installer (x64).exe`
 - `Releases/portable/GreatCalc_0.1.0_portable.zip`
 
 ### 🧰 Custom Installer (No Inno)
@@ -135,6 +136,8 @@ cmd /c 'call "C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Auxilia
 - supports custom install path
 - optional Desktop and Start Menu shortcuts
 - shows and requires license acceptance
+- animated language toggle (`EN / RU`)
+- premium rounded controls with custom-rendered button system
 - ships as self-contained single-file EXE
 
 ### ✅ Tests & Quality
@@ -298,7 +301,8 @@ cmd /c 'call "C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Auxilia
 - `src-tauri/target/release/bundle/msi/GreatCalc_0.1.0_x64_en-US.msi`
 - `Releases/desktop/`
 - `Releases/web/`
-- `Releases/custom-installer/GreatCalc_0.1.0_custom-installer.exe`
+- `Releases/custom-installer/GreatCalcInstaller.exe`
+- Имя файла в релизе: `Premium Calculator Installer (x64).exe`
 - `Releases/portable/GreatCalc_0.1.0_portable.zip`
 
 ### 🧰 Кастомный установщик (Без Inno)
@@ -310,6 +314,8 @@ cmd /c 'call "C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Auxilia
 - поддерживает кастомный путь установки
 - дает выбор ярлыков для Рабочего стола и меню Пуск
 - показывает лицензию и требует ее принятия
+- анимированный переключатель языка (`EN / RU`)
+- премиальные скругленные контролы и собственный рендер кнопок
 - поставляется как self-contained single-file EXE
 
 ### ✅ Тесты и качество
