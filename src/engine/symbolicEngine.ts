@@ -242,7 +242,13 @@ export function simplifySymbolicExpression(expression: string): string {
       )
 
       const leftExpression = equationForSolve.split('=')[0]
-      return `${nerdamer.simplify(leftExpression).toString()}=0`
+      let simplifiedLeft = nerdamer.simplify(leftExpression).toString()
+
+      if (simplifiedLeft.startsWith('-(') && simplifiedLeft.endsWith(')')) {
+        simplifiedLeft = simplifiedLeft.slice(2, -1)
+      }
+
+      return `${simplifiedLeft}=0`
     }
 
     return nerdamer.simplify(normalized).toString()
