@@ -188,8 +188,11 @@ export function ConvertersPanel({
           <p className="mt-2 text-[11px] text-slate-500 dark:text-slate-400">
             Provider: {currencyState.providerName}
             {currencyState.lastUpdatedAt
-              ? ` · ${new Date(currencyState.lastUpdatedAt).toLocaleString(language)}`
+              ? ` | ${new Date(currencyState.lastUpdatedAt).toLocaleString(language)}`
               : ''}
+          </p>
+          <p className="text-[11px] text-slate-500 dark:text-slate-400">
+            Auto-updates every 5 minutes while app is open.
           </p>
           <p className="h-4 text-xs text-rose-500 dark:text-rose-300">
             {currencyState.error ?? (currencyState.isLoading ? 'Refreshing rates...' : ' ')}
@@ -205,4 +208,3 @@ export function ConvertersPanel({
     </section>
   )
 }
-

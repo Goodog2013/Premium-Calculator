@@ -27,6 +27,11 @@ import {
   UnitConverterState,
 } from '../types/calculator'
 
+interface CurrencyRefreshOptions {
+  force?: boolean
+  background?: boolean
+}
+
 interface CalculatorStore {
   mode: CalculatorMode
   sidePanelTab: SidePanelTab
@@ -85,7 +90,7 @@ interface CalculatorStore {
   setCurrencyBase: (base: string) => Promise<void>
   setCurrencyQuote: (quote: string) => void
   setCurrencyAmount: (amount: string) => void
-  refreshCurrencyRates: () => Promise<void>
+  refreshCurrencyRates: (options?: CurrencyRefreshOptions) => Promise<void>
 
   setGraphExpression: (expression: string) => void
   setGraphWindow: (xMin: number, xMax: number) => void
@@ -614,7 +619,7 @@ export const useCalculatorStore = create<CalculatorStore>()(
               base,
             },
           }))
-          await get().refreshCurrencyRates()
+          await get().refreshCurrencyRates({ force: true })
         },
 
         setCurrencyQuote: (quote) =>
@@ -641,19 +646,25 @@ export const useCalculatorStore = create<CalculatorStore>()(
             ),
           })),
 
-        refreshCurrencyRates: async () => {
+        refreshCurrencyRates: async (options) => {
           const { base } = get().currencyConverter
+          const force = options?.force === true
+          const background = options?.background === true
 
-          set((state) => ({
-            currencyConverter: {
-              ...state.currencyConverter,
-              isLoading: true,
-              error: null,
-            },
-          }))
+          if (!background) {
+            set((state) => ({
+              currencyConverter: {
+                ...state.currencyConverter,
+                isLoading: true,
+                error: null,
+              },
+            }))
+          }
 
           try {
-            const rates = await currencyService.getRates(base)
+            const rates = await currencyService.getRates(base, {
+              forceRefresh: force,
+            })
             lastRates = rates.rates
 
             set((state) => ({
@@ -669,16 +680,25 @@ export const useCalculatorStore = create<CalculatorStore>()(
               ),
             }))
           } catch (error) {
-            set((state) => ({
-              currencyConverter: {
-                ...state.currencyConverter,
-                isLoading: false,
-                error:
-                  error instanceof Error
-                    ? error.message
-                    : 'Unable to refresh currency rates',
-              },
-            }))
+            if (background && get().currencyConverter.lastUpdatedAt) {
+              set((state) => ({
+                currencyConverter: {
+                  ...state.currencyConverter,
+                  isLoading: false,
+                },
+              }))
+            } else {
+              set((state) => ({
+                currencyConverter: {
+                  ...state.currencyConverter,
+                  isLoading: false,
+                  error:
+                    error instanceof Error
+                      ? error.message
+                      : 'Unable to refresh currency rates',
+                },
+              }))
+            }
           }
         },
 

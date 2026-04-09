@@ -1,4 +1,4 @@
-﻿import { CurrencyRates } from '../../types/calculator'
+import { CurrencyRates } from '../../types/calculator'
 
 export interface CurrencyProvider {
   readonly id: string
@@ -9,4 +9,8 @@ export interface CurrencyProvider {
 export interface CurrencyCacheEntry {
   rates: CurrencyRates
   savedAt: number
+}
+
+export interface CurrencyGetRatesOptions {
+  forceRefresh?: boolean
 }

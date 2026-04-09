@@ -1,11 +1,16 @@
-﻿import { CalculationError } from '../../engine/errors'
+import { CalculationError } from '../../engine/errors'
 import { STORAGE_KEYS } from '../../persistence/keys'
 import { CurrencyRates } from '../../types/calculator'
+import { FrankfurterProvider } from './frankfurterProvider'
 import { OpenExchangeProvider } from './openExchangeProvider'
 import { StaticFallbackCurrencyProvider } from './staticFallbackProvider'
-import { CurrencyCacheEntry, CurrencyProvider } from './types'
+import {
+  CurrencyCacheEntry,
+  CurrencyGetRatesOptions,
+  CurrencyProvider,
+} from './types'
 
-const CACHE_TTL_MS = 60 * 60 * 1000
+const CACHE_TTL_MS = 30 * 60 * 1000
 
 export const supportedCurrencies = [
   'USD',
@@ -42,15 +47,27 @@ function writeCache(data: Record<string, CurrencyCacheEntry>): void {
   }
 }
 
+function cacheHasFreshRates(
+  entry: CurrencyCacheEntry | undefined,
+  now: number,
+): entry is CurrencyCacheEntry {
+  return Boolean(entry && now - entry.savedAt < CACHE_TTL_MS)
+}
+
 export class CurrencyService {
   constructor(private readonly providers: CurrencyProvider[]) {}
 
-  async getRates(base: string): Promise<CurrencyRates> {
+  async getRates(
+    base: string,
+    options: CurrencyGetRatesOptions = {},
+  ): Promise<CurrencyRates> {
     const normalized = base.toUpperCase()
+    const now = Date.now()
     const cache = readCache()
     const cached = cache[normalized]
+    const shouldForceRefresh = options.forceRefresh === true
 
-    if (cached && Date.now() - cached.savedAt < CACHE_TTL_MS) {
+    if (!shouldForceRefresh && cacheHasFreshRates(cached, now)) {
       return cached.rates
     }
 
@@ -58,7 +75,7 @@ export class CurrencyService {
     for (const provider of this.providers) {
       try {
         const rates = await provider.fetchRates(normalized)
-        cache[normalized] = { rates, savedAt: Date.now() }
+        cache[normalized] = { rates, savedAt: now }
         writeCache(cache)
         return rates
       } catch (error) {
@@ -80,5 +97,6 @@ export class CurrencyService {
 
 export const currencyService = new CurrencyService([
   new OpenExchangeProvider(),
+  new FrankfurterProvider(),
   new StaticFallbackCurrencyProvider(),
 ])

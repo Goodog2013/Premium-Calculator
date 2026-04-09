@@ -1,4 +1,4 @@
-﻿# GreatCalc
+# GreatCalc
 
 GreatCalc is a premium-grade desktop calculator for Windows built with `Tauri + React + TypeScript + Vite + Tailwind`.
 
@@ -104,6 +104,7 @@ npm run lint
 - Programmer mode (bitwise ops + base switching: BIN/OCT/DEC/HEX)
 - Unit converter
 - Currency converter via provider abstraction
+- Real exchange rates with automatic background refresh (every 5 minutes)
 - Graph mode with real-time function plotting
 
 ### Functional depth
@@ -126,6 +127,7 @@ npm run lint
 - Favorites (saved formulas)
 - Persistent theme/mode/state via storage
 - Currency rates with provider fallback and cache
+- Live rates via Open ER API + Frankfurter API with offline fallback
 
 ## Architecture (Layered)
 

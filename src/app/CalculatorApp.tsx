@@ -11,6 +11,7 @@ import { GraphPanel } from '../components/panels/GraphPanel'
 import { HistoryPanel } from '../components/panels/HistoryPanel'
 import { SettingsPanel } from '../components/panels/SettingsPanel'
 import { copyToClipboard } from '../desktop/bindings'
+import { useCurrencyAutoRefresh } from '../hooks/useCurrencyAutoRefresh'
 import { useKeyboardInput } from '../hooks/useKeyboardInput'
 import { useLanguageSync } from '../hooks/useLanguageSync'
 import { useThemeSync } from '../hooks/useThemeSync'
@@ -31,6 +32,7 @@ export function CalculatorApp() {
   useThemeSync()
   useLanguageSync()
   useKeyboardInput()
+  useCurrencyAutoRefresh()
 
   const [copyStatus, setCopyStatus] = useState<'idle' | 'done'>('idle')
 
@@ -101,7 +103,7 @@ export function CalculatorApp() {
   const removeFavorite = useCalculatorStore((state) => state.removeFavorite)
 
   useEffect(() => {
-    void refreshCurrencyRates()
+    void refreshCurrencyRates({ force: true })
     rebuildGraph()
   }, [rebuildGraph, refreshCurrencyRates])
 
@@ -232,7 +234,7 @@ export function CalculatorApp() {
                       onCurrencyBaseChange={setCurrencyBase}
                       onCurrencyQuoteChange={setCurrencyQuote}
                       onCurrencyAmountChange={setCurrencyAmount}
-                      onCurrencyRefresh={refreshCurrencyRates}
+                      onCurrencyRefresh={() => refreshCurrencyRates({ force: true })}
                     />
                   </motion.div>
                 )}
